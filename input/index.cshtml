@@ -1,12 +1,11 @@
 ---
+Title: Recent Posts
 ArchiveSources: => $"posts/**/*"
-ArchiveDestination: >
+ArchiveDestination: > 
   => GetInt("Index") <= 1 ? $"index.html" : $"{GetInt("Index")}.html"
 ArchivePageSize: => @Constants.PostsPerPage
+ArchiveOrderKey: date
 ArchiveOrderDescending: true
-Title: All Posts
-ArchiveTitle: >
-  => $"{Constants.BlogTitle}"
 ---
 
 @Html.Partial("_posts.cshtml", Document.GetChildren())

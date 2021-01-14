@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>@Model.GetString("Title")</title>
+    @{
+        var bigTitle = $"{Constants.BlogTitle} - {@Model.GetString("Title")}";
+        var blogDescription = @Model.GetString("Description");
+        if (string.IsNullOrEmpty(blogDescription)) blogDescription = Constants.Description;
+    }   
+
+    <title>@bigTitle</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="/assets/styles.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-    
+
+
+    <meta name="description" content="@blogDescription">
+
+@if (!string.IsNullOrWhiteSpace(Model.GetString("Title"))){
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@Constants.BlogTitle" />
+    <meta name="twitter:title" content="@Model.GetString("Title"))" />
+    <meta name="twitter:description" content="@blogDescription" />
+    <meta name="twitter:image" content="/assets/avatar.png" />
+}
+
     @RenderSection("head", required: false)
 </head>
     <body class="bg-gray-50">
@@ -25,6 +42,12 @@
             <h2 class="font-serif font-bold text-3xl lg:font-extrabold lg:text-5xl leading-snug mb-2 lg:mb-4">@Model.GetString("Title")</h2>
             @RenderBody()
         </main>
+
+        <footer>
+            <span class="mx-auto py-4 max-w-4xl block text-sm font-light text-center">
+                &copy; @DateTime.Now.Year Phil Scott (<a class="text-blue-700" href="https://twitter.com/Philco78">twitter</a>) | Built with <a class="text-blue-700" href="https://statiq.dev/">Statiq</a>
+            </span>
+        </footer>
     </body>
 </html>
 
