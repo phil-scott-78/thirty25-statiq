@@ -1,0 +1,26 @@
+@model IDocument
+
+
+@{
+    IDocument older = Model.GetDocument(Keys.Next);
+    IDocument newer = Model.GetDocument(Keys.Previous);
+}
+
+
+@if (older != null || newer != null)
+{
+    <div class="flex flex-row justify-content-between space-x-4">
+        <div>
+            @if (older != null)
+            {
+                <a class="py-0.5 px-1 text-blue-900 bg-blue-50 border border-blue-200 hover:bg-blue-100 hover:text-blue-800 hover:border-blue-300 rounded transition-colors" href="@Context.GetLink(older)" role="button">Older</a>
+            }
+        </div>
+        <div>
+            @if (newer != null)
+            {
+                <a class="py-0.5 px-1 text-blue-900 bg-blue-50 border border-blue-200 hover:bg-blue-100 hover:text-blue-800 hover:border-blue-300 rounded transition-colors" href="@Context.GetLink(newer)" role="button">Newer</a>
+            }
+        </div>
+    </div>
+}

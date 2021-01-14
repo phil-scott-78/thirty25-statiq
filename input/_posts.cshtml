@@ -1,0 +1,20 @@
+﻿@inherits StatiqRazorPage<IEnumerable<IDocument>>
+<div>    
+    @foreach (IDocument post in Model)
+    {
+        <div class="mb-4 lg:mb-8 pb-4 lg:pb-8 border-b border-blue-100">
+            <div class="flex flex-col md:flex-row md:flex-wrap md:items-center">
+                <h3 class="md:w-3/4 md:order-2 md:mb-2" ><a class="text-blue-900 hover:text-blue-600 font-medium text-xl md:text-3xl" href="@Context.GetLink(post)">@post.GetString("Title")</a></h3>
+                <time class="mb-2 md:mb-0 text-xs md:text-sm md:w-1/4 md:order-1">
+                    @post.GetDateTime("date").ToString("yyyy MMM dd")
+                </time>
+                <article class="md:w-3/4 md:order-3 md:self-end md:ml-auto">
+                    <p class="mb-2">@post.GetString("Description")</p>
+                    <div>
+                        @Html.Partial("_taglist", @post.GetList<string>("tags"))
+                    </div>
+                </article>    
+            </div>
+        </div>
+    }
+</div>

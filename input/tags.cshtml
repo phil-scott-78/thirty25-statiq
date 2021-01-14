@@ -1,0 +1,26 @@
+ArchiveSources: => $"posts/**/*"
+ArchiveKey: Tags
+ArchiveKeyComparer: => StringComparer.OrdinalIgnoreCase.ToConvertingEqualityComparer()
+ArchiveDestination: >
+  => GetInt("Index") <= 1 ? $"tags/{NormalizedPath.OptimizeFileName(GetString("GroupKey"))}/index.html" : $"tags/{NormalizedPath.OptimizeFileName(GetString("GroupKey"))}/{GetInt("Index")}.html"
+ArchivePageSize: 10
+ArchiveOrderDescending: true
+Title: Tags
+ArchiveTitle: => GetString("GroupKey")
+---
+@if (Document.ContainsKey(Keys.GroupKey))
+{
+  <!-- view all posts for a tag  -->
+  @Html.Partial("/_posts.cshtml", Document.GetChildren())
+  @Html.Partial("_nextprevious.cshtml", Document)
+}
+else
+{ 
+  <!-- page doesn't have a tag, so we are showing a list of the tags -->
+    @foreach (IDocument tag in Document.GetChildren().OrderByDescending(x => x.GetChildren().Count()))
+    {
+        string postCount = tag.GetChildren().Count().ToString();
+        <a role="button" href="@Context.GetLink(tag)" class="badge badge-light"> @tag.GetTitle() (@postCount)</a>
+    }
+}
+
