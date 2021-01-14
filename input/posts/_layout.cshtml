@@ -5,6 +5,6 @@
 <p class="mb-1 lg:my-b text-sm">Posted <time>@Document.GetDateTime("date").ToLongDateString()</time></p>
 @Html.Partial($"../_taglist.cshtml", Document.GetList<string>("tags"))
 
-<article class="prose prose-sm sm:prose lg:prose-lg font-light text-gray-700 leading-loose">
+<article class="prose lg:prose-lg font-light text-gray-700 lg:leading-loose">
     @RenderBody()
 </article>
