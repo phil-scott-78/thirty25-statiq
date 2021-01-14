@@ -3,6 +3,6 @@
     public class Constants
     {
         public const string BlogTitle = "Thirty25";
-        public const int PostsPerPage = 2;
+        public const int PostsPerPage = 10;
     }
 }
