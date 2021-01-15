@@ -50,26 +50,36 @@ module.exports = {
                 borderBottomColor: defaultTheme.colors.blue[600],
               },
             },
-            pre: {
-              lineHeight: defaultTheme.lineHeight.snug,
-            },
             "pre code": {
               fontWeight: defaultTheme.fontWeight.light,
-              lineHeight: "1.5em",
             },
             code: {
               fontWeight: defaultTheme.fontWeight.light,
               color: defaultTheme.colors.gray[900],
               background: defaultTheme.colors.gray[200],
-              borderColor: defaultTheme.colors.gray[400],
+              borderColor: defaultTheme.colors.gray[300],
               borderWidth: 1,
-              padding: defaultTheme.spacing[1],
+              paddingLeft: defaultTheme.spacing["1"],
+              paddingRight: defaultTheme.spacing["1"],
+              paddingTop: defaultTheme.spacing["0.5"],
+              paddingBottom: defaultTheme.spacing["0.5"],
             },
             "code::before": {
               content: "&nbsp;",
             },
             "code::after": {
               content: "&nbsp;",
+            },
+          },
+        },
+        lg: {
+          css: {
+            pre: {
+              lineHeight: defaultTheme.lineHeight.snug,
+            },
+            "pre code": {
+              fontSize: defaultTheme.fontSize.sm,
+              lineHeight: defaultTheme.lineHeight.snug,
             },
           },
         },
