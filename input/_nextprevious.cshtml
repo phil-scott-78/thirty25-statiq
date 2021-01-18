@@ -1,9 +1,9 @@
+@inherits StatiqRazorPage<IDocument>
 @model IDocument
 
-
 @{
-    IDocument older = Model.GetDocument(Keys.Next);
-    IDocument newer = Model.GetDocument(Keys.Previous);
+    var older = Model.GetDocument(Keys.Next);
+    var newer = Model.GetDocument(Keys.Previous);
 }
 
 

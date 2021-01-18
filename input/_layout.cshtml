@@ -1,10 +1,15 @@
+@inherits StatiqRazorPage<IDocument>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     @{
         var bigTitle = $"{Constants.BlogTitle} - {@Model.GetString("Title")}";
         var blogDescription = @Model.GetString("Description");
-        if (string.IsNullOrEmpty(blogDescription)) blogDescription = Constants.Description;
+        if (string.IsNullOrEmpty(blogDescription))
+        {
+            blogDescription = Constants.Description;
+        }
     }   
 
     <title>@bigTitle</title>

@@ -1,6 +1,7 @@
 @{
-    Layout = @"/_layout.cshtml";
+    Layout = @"../_layout.cshtml";
 }
+@inherits StatiqRazorPage<IDocument>
 
 <p class="mb-1 lg:my-b text-sm">Posted <time>@Document.GetDateTime("date").ToLongDateString()</time></p>
 @Html.Partial($"../_taglist.cshtml", Document.GetList<string>("tags"))

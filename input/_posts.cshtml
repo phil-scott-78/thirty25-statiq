@@ -1,6 +1,6 @@
 ﻿@inherits StatiqRazorPage<IEnumerable<IDocument>>
 <div>    
-    @foreach (IDocument post in Model)
+    @foreach (var post in Model)
     {
         <div class="mb-4 lg:mb-8 pb-4 lg:pb-8 border-b border-blue-100">
             <div class="flex flex-col md:flex-row md:flex-wrap md:items-center">

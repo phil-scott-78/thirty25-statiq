@@ -9,18 +9,20 @@ ArchiveOrderDescending: true
 Title: Tags
 ArchiveTitle: => GetString("GroupKey")
 ---
+@inherits StatiqRazorPage<IDocument>
+
 @if (Document.ContainsKey(Keys.GroupKey))
 {
   <!-- view all posts for a tag  -->
-  @Html.Partial("/_posts.cshtml", Document.GetChildren())
+  @Html.Partial("_posts.cshtml", Document.GetChildren())
   @Html.Partial("_nextprevious.cshtml", Document)
 }
 else
-{ 
+{
   <!-- page doesn't have a tag, so we are showing a list of the tags -->
-    @foreach (IDocument tag in Document.GetChildren().OrderByDescending(x => x.GetChildren().Count()))
+    @foreach (var tag in Document.GetChildren().OrderByDescending(x => x.GetChildren().Count()))
     {
-        string postCount = tag.GetChildren().Count().ToString();
+        var postCount = tag.GetChildren().Count().ToString();
         <a role="button" href="@Context.GetLink(tag)" class="badge badge-light"> @tag.GetTitle() (@postCount)</a>
     }
 }
