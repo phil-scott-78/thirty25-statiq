@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using LibGit2Sharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Cli;
@@ -10,6 +11,7 @@ using Statiq.Common;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using Command = SimpleExec.Command;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Thirty25.Statiq.Helpers
 {
@@ -22,6 +24,10 @@ namespace Thirty25.Statiq.Helpers
         [CommandOption("-e")]
         [Description("Launch editor after creation")]
         public bool LaunchEditor { get; set; }
+
+        [CommandOption("-b")]
+        [Description("Create new Git branch for post")]
+        public bool CreateBranch { get; set; }
 
         [CommandOption("--desc <Description>")]
         public string Description { get; set; } = "";
@@ -65,9 +71,17 @@ namespace Thirty25.Statiq.Helpers
         {
             var fileSystem = engineManager.Engine.FileSystem;
             var dateTime = DateTime.Now;
-            var filePath = fileSystem.GetRootPath()
+            var optimizedTitle = NormalizedPath.OptimizeFileName(settings.Title);
+            var rootPath = fileSystem.GetRootPath();
+
+            if (settings.CreateBranch)
+            {
+                CreateBranch(rootPath, optimizedTitle, engineManager);
+            }
+
+            var filePath = rootPath
                 .Combine($"input/posts/{dateTime:yyyy/MM/}")
-                .GetFilePath($"{NormalizedPath.OptimizeFileName(settings.Title)}.md");
+                .GetFilePath($"{optimizedTitle}.md");
             var file = fileSystem.GetFile(filePath);
 
             var frontMatter = FrontMatter
@@ -79,7 +93,7 @@ namespace Thirty25.Statiq.Helpers
 
             if (settings.LaunchEditor)
             {
-                var args = $"\"{fileSystem.GetRootPath().FullPath}\" -g \"{filePath}:0\"";
+                var args = $"\"{rootPath.FullPath}\" -g \"{filePath}:0\"";
                 await Command.RunAsync(
                     "code",
                     args,
@@ -90,6 +104,24 @@ namespace Thirty25.Statiq.Helpers
 
             engineManager.Engine.Logger.Log(LogLevel.Information, "Wrote new markdown file at {file}", filePath);
             return 0;
+        }
+
+        private static void CreateBranch(NormalizedPath rootPath, string optimizedTitle, IEngineManager engineManager)
+        {
+            using var repo = new Repository(rootPath.FullPath);
+
+            if (repo.Head.FriendlyName != "main" && repo.Head.FriendlyName != "master")
+                throw new Exception($"Only branching from main or master is support");
+
+            if (repo.Branches.Any(i => i.FriendlyName == optimizedTitle))
+                throw new Exception($"Branch with name \"{optimizedTitle}\" already exists");
+
+            var branchName = $"posts/{optimizedTitle}";
+            
+            repo.CreateBranch(branchName);
+            engineManager.Engine.Logger.Log(LogLevel.Information, "Created new git branch {branch}", branchName);
+            Commands.Checkout(repo, repo.Branches[branchName]);
+            engineManager.Engine.Logger.Log(LogLevel.Information, "Set current git branch to {branch}", branchName);
         }
 
         public NewPost(IConfiguratorCollection configurators, Settings settings, IServiceCollection serviceCollection,
