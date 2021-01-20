@@ -4,10 +4,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Thirty25</RootNamespace>
-    <LangVersion>9</LangVersion>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SimpleExec" Version="6.4.0" />
     <PackageReference Include="Statiq.Highlight" Version="1.0.0-beta.32" />
     <PackageReference Include="Statiq.Web" Version="1.0.0-beta.18" />
   </ItemGroup>
