@@ -10,7 +10,7 @@ repository: https://github.com/thirty25/statiqdev.github.io
 
 [Vercel](https://vercel.com) (formerly Zeit) is a platform for hosting static sites and serverless functions. They provide a lot of services for free that make it perfect for hosting your developer blog:
 
-- A mindblowingly hook into Git for automated deployments
+- A seamless integration with Git for automated deployments
 - Free SSL on custom domains
 - Automatic creation of additional development deployments based on branching and pull requests
 - Fast edge servers - no need for configuring any CDN here
