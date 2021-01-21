@@ -54,6 +54,12 @@ By default, import will expect the destination database to be created and empty 
 
 During this process, keys and indexes will be created as well as a helper table named PostTags. These can be turned off with a switch if so desired.
 
+## Sample Workflow
+
+1. `soddi list spa` - this lists all archives containing the phrase "spa"
+2. `soddi download space` - you can use either the full site name (space.stackexchange.com) or the short name to download. we'll use the short name, and it'll download a file whose name matches the site name.
+3. `soddi import space.stackexchange.com.7z --dropAndCreate` - import the space.stackexchange.com.7z file we just downloaded. the `--dropAndCreate` option will drop any database named space.stackexchange.com and recreate it using your server's configured defaults. `soddi import -h` will give you more options for specifying a connectionstring and specifying a database name.
+
 Once the import is done, you'll have a local copy of the Stack Exchange database of your choice!
 
 ## Database Info
