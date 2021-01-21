@@ -13,6 +13,8 @@ Here's the hierarchy of the files and what they are used for
   - `/posts` - where the individual posts go.
     - `_layout.cshtml` - post specific layout
     - `_ViewStart.cshtml` - sets all the posts to use the layout. Case is important for vercel!
+  - `/Statiq.Helpers`
+    - `NewPostCommand` - extends Statiq with a custom command to create a new blog post by writing a tempalted markdown file and creating a new branch.
   - `_layout.cshtml` - the master layout for the site. includes all the html head and site layout
   - `_nextprevious.cshtml` - HTML partial for next and previous links, used by index.cshtml and tags.cshtml
   - `_posts.cshtml` - HTML partial for displaying a list of posts with their title and description, used by index.cshtml and tags.cshtml
