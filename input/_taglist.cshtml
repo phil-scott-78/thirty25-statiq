@@ -1,6 +1,6 @@
 @inherits StatiqRazorPage<IEnumerable<string>>
 
-<ul class="flex space-x-2 mb-4">
+<ul class="flex space-x-1 md:space-x-2 mb-4 overflow-hidden">
     @foreach (var tag in Model)
     {
         var link = @Context.GetLink($"tags/{NormalizedPath.OptimizeFileName(tag)}/index.html");
