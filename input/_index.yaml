@@ -1,0 +1,7 @@
+﻿Title: Recent Posts
+ArchiveSources: => $"posts/**/*"
+ArchiveDestination: >
+  => GetInt("Index") <= 1 ? $"index.html" : $"{GetInt("Index")}.html"
+ArchivePageSize: => @Constants.PostsPerPage
+ArchiveOrderKey: date
+ArchiveOrderDescending: true

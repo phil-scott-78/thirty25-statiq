@@ -1,14 +1,3 @@
-ArchiveSources: => $"posts/**/*"
-ArchiveKey: Tags
-ArchiveKeyComparer: => StringComparer.OrdinalIgnoreCase.ToConvertingEqualityComparer()
-ArchiveDestination: >
-  => GetInt("Index") <= 1 ? $"tags/{NormalizedPath.OptimizeFileName(GetString("GroupKey"))}/index.html" : $"tags/{NormalizedPath.OptimizeFileName(GetString("GroupKey"))}/{GetInt("Index")}.html"
-ArchivePageSize: => @Constants.PostsPerPage
-ArchiveOrderKey: date
-ArchiveOrderDescending: true
-Title: Tags
-ArchiveTitle: => GetString("GroupKey")
----
 @inherits StatiqRazorPage<IDocument>
 
 @if (Document.ContainsKey(Keys.GroupKey))

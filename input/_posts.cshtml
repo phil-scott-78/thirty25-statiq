@@ -11,7 +11,7 @@
                 <article class="md:w-3/4 md:order-3 md:self-end md:ml-auto">
                     <p class="mb-2">@post.GetString("Description")</p>
                     <div>
-                        @Html.Partial("_taglist", @post.GetList<string>("tags"))
+                        @Html.Partial("_taglist.cshtml", @post.GetList<string>("tags"))
                     </div>
                 </article>    
             </div>

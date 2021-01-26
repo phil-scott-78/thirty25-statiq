@@ -1,12 +1,3 @@
----
-Title: Recent Posts
-ArchiveSources: => $"posts/**/*"
-ArchiveDestination: > 
-  => GetInt("Index") <= 1 ? $"index.html" : $"{GetInt("Index")}.html"
-ArchivePageSize: => @Constants.PostsPerPage
-ArchiveOrderKey: date
-ArchiveOrderDescending: true
----
 @inherits StatiqRazorPage<IDocument>
 @Html.Partial("_posts.cshtml", Document.GetChildren())
 @Html.Partial("_nextprevious.cshtml", Document)
