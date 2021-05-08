@@ -4,8 +4,8 @@
   "description": "thirty25.com blog with statiq",
   "main": "index.js",
   "scripts": {
-    "build:tailwind": "tailwind build tailwind.css -o input/assets/styles.css",
-    "build": "dotnet run -- -o public && cross-env NODE_ENV=production tailwind build tailwind.css -o public/assets/styles.css",
+    "build:tailwind": "tailwind build ./input/tailwind.css  -c ./input/tailwind.config.js  -o ./public/assets/styles.css",
+    "build": " cross-env NODE_ENV=production dotnet run -- -o public",
     "watch": "dotnet run -- preview"
   },
   "author": "",

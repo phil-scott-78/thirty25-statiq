@@ -8,7 +8,7 @@ using ByteSizeLib;
 using LibGit2Sharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Spectre.Cli;
+using Spectre.Console.Cli;
 using Statiq.App;
 using Statiq.Common;
 using TinyPng;
