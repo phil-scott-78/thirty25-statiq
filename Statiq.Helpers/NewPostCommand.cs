@@ -102,7 +102,7 @@ namespace Thirty25.Statiq.Helpers
                     noEcho: true);
             }
 
-            engineManager.Engine.Logger.Log(LogLevel.Information, "Wrote new markdown file at {file}", filePath);
+            engineManager.Engine.Logger.Log(LogLevel.Information, "Wrote new markdown file at {File}", filePath);
             return 0;
         }
 
@@ -117,11 +117,11 @@ namespace Thirty25.Statiq.Helpers
                 throw new Exception($"Branch with name \"{optimizedTitle}\" already exists");
 
             var branchName = $"posts/{optimizedTitle}";
-            
+
             repo.CreateBranch(branchName);
-            engineManager.Engine.Logger.Log(LogLevel.Information, "Created new git branch {branch}", branchName);
+            engineManager.Engine.Logger.Log(LogLevel.Information, "Created new git branch {Branch}", branchName);
             Commands.Checkout(repo, repo.Branches[branchName]);
-            engineManager.Engine.Logger.Log(LogLevel.Information, "Set current git branch to {branch}", branchName);
+            engineManager.Engine.Logger.Log(LogLevel.Information, "Set current git branch to {Branch}", branchName);
         }
 
         public NewPost(IConfiguratorCollection configurators, Settings settings, IServiceCollection serviceCollection,
