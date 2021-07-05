@@ -44,7 +44,7 @@ namespace Thirty25.Statiq.Helpers
             var status = repo.RetrieveStatus();
 
             var modifiedPngs = status
-                .Where(i => Path.HasExtension(".png"))
+                .Where(_ => Path.HasExtension(".png"))
                 .Select(i => new NormalizedPath(Path.Combine(rootPath, i.FilePath)))
                 .ToImmutableList();
 
