@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -18,7 +19,7 @@ namespace Thirty25.Statiq.Helpers
     {
         public SocialImages()
         {
-            Dependencies.AddRange(nameof(Inputs), nameof(Data));
+            Dependencies.AddRange(nameof(Inputs));
 
             ProcessModules = new ModuleList
             {
@@ -58,7 +59,7 @@ namespace Thirty25.Statiq.Helpers
             app.MapRazorPages();
             await app.StartAsync();
 
-            var url = app.Addresses.FirstOrDefault(u => u.StartsWith("http://"));
+            var url = app.Urls.FirstOrDefault(u => u.StartsWith("http://"));
 
             using var playwright = await Playwright.CreateAsync();
             
@@ -74,13 +75,20 @@ namespace Thirty25.Statiq.Helpers
             {
                 var title = input.GetString("Title");
                 var description = input.GetString("Description");
+                var tags = input.GetList<string>("tags") ?? Array.Empty<string>();
 
-                await page.GotoAsync($"{url}/SocialCard?title={title}&desc={description}");
+                await page.GotoAsync($"{url}/SocialCard?title={title}&desc={description}&tags={string.Join(';', tags)}");
                 var bytes = await page.ScreenshotAsync();
 
                 var destination = input.Destination.InsertSuffix("-social").ChangeExtension("png");
                 // can we set this property then pull it when rendering the page?
-                outputs.Add(context.CreateDocument(input.Source, destination, context.GetContentProvider(bytes)));
+                var doc = context.CreateDocument(
+                    input.Source, 
+                    destination, 
+                    new MetadataItems(){ { "DocId", input.Id }},
+                    context.GetContentProvider(bytes));
+   
+                outputs.Add(doc);
             }
 
             return outputs;

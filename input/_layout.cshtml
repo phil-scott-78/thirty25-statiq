@@ -4,12 +4,13 @@
 <html lang="en">
 <head>
     @{
-        var bigTitle = $"{Constants.BlogTitle} - {@Model.GetString("Title")}";
-        var blogDescription = @Model.GetString("Description");
-        if (string.IsNullOrEmpty(blogDescription))
-        {
-            blogDescription = Constants.Description;
-        }
+        var bigTitle = $"{Constants.BlogTitle} - {Model.GetString("Title")}";
+        var blogDescription = Model.GetString("Description") ?? Constants.Description;
+
+        var card = Outputs
+            .FirstOrDefault(i => i.GetString("DocId") == Model.Id.ToString());
+
+
     }   
 
     <title>@bigTitle</title>
@@ -18,15 +19,28 @@
     <link href="/assets/styles.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
 
-
     <meta name="description" content="@blogDescription">
 
-@if (!string.IsNullOrWhiteSpace(Model.GetString("Title"))){
-    <meta name="twitter:card" content="summary" />
+@if (card != null)
+{
+
+    var path = "/" + card.Destination;
+    // twitter cards need a full url. since we are running on vercel, we can pull the site name from the env variable.
+    // if we don't find this setting, we'll just include the relative path of the card for debugging the path locally
+    // but this won't render properly in prod.
+    var vercelUrl = Model.GetString("VERCEL_URL");
+    if (vercelUrl != null)
+    {
+        path = $"https://{vercelUrl}" + path;
+    }
+    
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Constants.BlogTitle" />
     <meta name="twitter:title" content="@Model.GetString("Title")" />
+    <meta name="twitter:creator" content="@(Model.GetString("Description") ?? Constants.Description)">
+
     <meta name="twitter:description" content="@blogDescription" />
-    <meta name="twitter:image" content="/assets/avatar.png" />
+    <meta name="twitter:image" content="@path">
 }
 
     @RenderSection("head", required: false)

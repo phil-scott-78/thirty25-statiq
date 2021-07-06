@@ -10,14 +10,106 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;800&display=swap" rel="stylesheet">
+  
+  <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      
+      body {
+        font-family: Montserrat;
+      }
+      
+      #container {
+        color: rgba(255,255,255,.95);
+        background-color: #0F172A;
+        
+        background-image:     
+          radial-gradient(rgba(0,0,0,.1), rgba(0,0,0,.5)),
+          linear-gradient(rgba(255,255,255,.05) 2px, transparent 2px),
+          linear-gradient(90deg, rgba(255,255,255,.05) 2px, transparent 2px),
+          linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)    
+          ;
+          
+        background-size: 100% 100%, 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+        background-position:0 0,-2px -2px, -2px -2px, -1px -1px, -1px -1px;    
+        
+        padding: 40px 50px;
+        height: 277px;
+        width: 580px;
+        
+        display: grid; 
+        grid-template-columns: 75% 25%;
+        grid-template-rows: auto;
+        grid-template-areas: 
+          "title image"
+          "desc desc";
+      }
+      
+      heading{
+         grid-area: title;
+      }
+      
+      footer{
+        grid-area: desc;
+        display: flex;
+      }
+      
+      footer ul {
+        align-self: flex-end;
+        list-style: none;  
+        padding: 0;
+        margin: 0;
+      }
+      
+      footer ul li {
+        display: inline-block;
+        font-size: .8rem;
+        padding:2px 6px;
+        margin-right: 8px;
+        font-weight:200;
+        border: 1px solid rgba(255,255,255,.3);
+        border-radius: 4px;
+        background-color: rgba(128,128,255,.15);
+      }
+      
+      h1 {
+        font-size: 3rem;
+        line-height: 3.2rem;
+      }
+      
+      #desc {
+        font-size:1.2rem;
+        font-weight:200;
+      }
+      
+      #image{
+        grid-area: image;
+        text-align:right;      
+      }
+      
+      svg {
+        height:45%;
+      }
+  </style>
 </head>
-
 <body>
   <div id="container">
-    <heading>
-      <h1>@Model.Title</h1>
-      <p id="desc">@Model.Description</p>
-    </heading>
+      <heading>
+          <h1>@Model.Title</h1>
+          <p id="desc">@Model.Description</p>
+      </heading>
+      <footer>
+          <ul>
+              @{ var tags = Model.Tags?.Split(";") ?? Array.Empty<string>(); }
+              @foreach (var tag in tags)
+              {
+                <li>@tag</li>
+              }
+          </ul>
+      </footer>
     <div id="image">      
       <svg viewBox="0 0 264 280" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <defs>
