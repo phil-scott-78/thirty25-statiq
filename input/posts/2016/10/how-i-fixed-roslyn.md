@@ -1,6 +1,6 @@
 ---
 title: How I Fixed Roslyn
-description: How to populate a test database with real data from a Stack Overflow site, and generate a DbContext to query it.
+description: A step-by-step dive into troubleshooting and fixing an issue within Roslyn.
 date: 2016-10-31
 tags:
   - roslyn
