@@ -23,17 +23,8 @@
 
 @if (card != null)
 {
+    var path = (Model.GetString("SiteUrl") ?? Constants.ProdSiteUrl) + card.Destination;
 
-    var path = "/" + card.Destination;
-    // twitter cards need a full url. since we are running on vercel, we can pull the site name from the env variable.
-    // if we don't find this setting, we'll just include the relative path of the card for debugging the path locally
-    // but this won't render properly in prod.
-    var vercelUrl = Model.GetString("VERCEL_URL");
-    if (vercelUrl != null)
-    {
-        path = $"https://{vercelUrl}" + path;
-    }
-    
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Constants.BlogTitle" />
     <meta name="twitter:title" content="@Model.GetString("Title")" />
