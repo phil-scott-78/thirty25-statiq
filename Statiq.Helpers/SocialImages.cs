@@ -66,7 +66,7 @@ namespace Thirty25.Statiq.Helpers
             await using var browser = await playwright.Chromium.LaunchAsync();
             var page = await browser.NewPageAsync(new BrowserNewPageOptions
                 {
-                    ViewportSize = new ViewportSize { Width = 680, Height = 357 }
+                    ViewportSize = new ViewportSize { Width = 1200, Height = 628 }
                 }
             );
 
