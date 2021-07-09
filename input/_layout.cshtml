@@ -31,7 +31,7 @@
     <meta name="twitter:creator" content="@(Model.GetString("Description") ?? Constants.Description)">
 
     <meta name="twitter:description" content="@blogDescription" />
-    <meta name="twitter:image" content="@path">
+    <meta name="twitter:image" content="<?# FullUrl path=@card.Destination /?>" />
 }
 
     @RenderSection("head", required: false)
