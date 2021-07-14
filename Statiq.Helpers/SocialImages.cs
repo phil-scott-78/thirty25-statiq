@@ -45,9 +45,13 @@ namespace Thirty25.Statiq.Helpers
         }
     }
 
-    class GenerateSocialImage : Module
+    internal class GenerateSocialImage : ParallelModule
     {
-        protected override async Task<IEnumerable<IDocument>> ExecuteContextAsync(IExecutionContext context)
+        private WebApplication _app;
+        private IPlaywright _playwright;
+        private IBrowser _browser;
+
+        protected override async Task BeforeExecutionAsync(IExecutionContext context)
         {
             var builder = WebApplication.CreateBuilder();
             builder.Logging.ClearProviders();
@@ -55,43 +59,50 @@ namespace Thirty25.Statiq.Helpers
                 .AddRazorPages()
                 .WithRazorPagesRoot("/Statiq.Helpers");
 
-            using var app = builder.Build();
-            app.MapRazorPages();
-            await app.StartAsync();
+            _app = builder.Build();
+            _app.MapRazorPages();
+            await _app.StartAsync();
 
-            var url = app.Urls.FirstOrDefault(u => u.StartsWith("http://"));
+            _playwright = await Playwright.CreateAsync();
+            _browser = await _playwright.Chromium.LaunchAsync();
 
-            using var playwright = await Playwright.CreateAsync();
-            
-            await using var browser = await playwright.Chromium.LaunchAsync();
-            var page = await browser.NewPageAsync(new BrowserNewPageOptions
+            await base.BeforeExecutionAsync(context);
+        }
+
+        protected override async Task FinallyAsync(IExecutionContext context)
+        {
+            await _browser.DisposeAsync();
+            _playwright.Dispose();
+            await _app.DisposeAsync();
+            await base.FinallyAsync(context);
+        }
+
+        protected override async Task<IEnumerable<IDocument>> ExecuteInputAsync(IDocument input,
+            IExecutionContext context)
+        {
+            var url = _app.Urls.FirstOrDefault(u => u.StartsWith("http://"));
+            var page = await _browser.NewPageAsync(new BrowserNewPageOptions
                 {
                     ViewportSize = new ViewportSize { Width = 1200, Height = 628 }
                 }
             );
 
-            var outputs = new List<IDocument>();
-            foreach (var input in context.Inputs)
-            {
-                var title = input.GetString("Title");
-                var description = input.GetString("Description");
-                var tags = input.GetList<string>("tags") ?? Array.Empty<string>();
+            var title = input.GetString("Title");
+            var description = input.GetString("Description");
+            var tags = input.GetList<string>("tags") ?? Array.Empty<string>();
 
-                await page.GotoAsync($"{url}/SocialCard?title={title}&desc={description}&tags={string.Join(';', tags)}");
-                var bytes = await page.ScreenshotAsync();
+            await page.GotoAsync($"{url}/SocialCard?title={title}&desc={description}&tags={string.Join(';', tags)}");
+            var bytes = await page.ScreenshotAsync();
 
-                var destination = input.Destination.InsertSuffix("-social").ChangeExtension("png");
-                // can we set this property then pull it when rendering the page?
-                var doc = context.CreateDocument(
-                    input.Source, 
-                    destination, 
-                    new MetadataItems(){ { "DocId", input.Id }},
-                    context.GetContentProvider(bytes));
-   
-                outputs.Add(doc);
-            }
+            var destination = input.Destination.InsertSuffix("-social").ChangeExtension("png");
+            // can we set this property then pull it when rendering the page?
+            var doc = context.CreateDocument(
+                input.Source,
+                destination,
+                new MetadataItems { { "DocId", input.Id } },
+                context.GetContentProvider(bytes));
 
-            return outputs;
+            return new[] { doc };
         }
     }
 }
