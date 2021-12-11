@@ -4,7 +4,7 @@ description: How to add tags to your EF Core queries, and how to automatically g
 date: 2020-09-02
 tags:
     - Entity Framework
-repository: https://github.com/thirty25/ef-core-tagging
+repository: https://github.com/thirty25/ef-core-tagging/tree/efcore-5
 ---
 
 One of the quickest ways to earn the ire of a DBA is to shrug your shoulders, and tell them you don't know what code
