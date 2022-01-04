@@ -6,7 +6,7 @@
   "scripts": {
     "install-dotnet": "./dotnet-install.sh --channel 6.0 --install-dir ~/.net/",
     "build:tailwind": "tailwind build -i ./input/tailwind.css  -c ./input/tailwind.config.js  -o ./public/assets/styles.css",
-    "build": "npm run install-dotnet && cross-env NODE_ENV=production ASPNETCORE_URLS=\"http://localhost:5500\" ~/.net/dotnet run --urls \"http://localhost:322021\"  -- -o public",
+    "build": "npm run install-dotnet && ~/.net/dotnet tool restore &&  ~/.net/dotnet build && ~/.net/dotnet tool run playwright install && cross-env NODE_ENV=production ASPNETCORE_URLS=\"http://localhost:5500\" ~/.net/dotnet run --urls \"http://localhost:322021\"  -- -o public",
     "watch": "dotnet run -- preview -o public"
   },
   "author": "",
@@ -17,7 +17,6 @@
     "tailwindcss": "^3.0.9"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
-    "playwright": "^1.12.3"
+    "cross-env": "^7.0.3"
   }
 }

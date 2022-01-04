@@ -124,8 +124,8 @@ namespace Thirty25.Statiq.Helpers
             engineManager.Engine.Logger.Log(LogLevel.Information, "Set current git branch to {Branch}", branchName);
         }
 
-        public NewPost(IConfiguratorCollection configurators, Settings settings, IServiceCollection serviceCollection,
-            Bootstrapper bootstrapper) : base(configurators, settings, serviceCollection, bootstrapper)
+        public NewPost(IConfiguratorCollection configurators, Settings settings, IServiceCollection serviceCollection, IFileSystem fileSystem,
+            Bootstrapper bootstrapper) : base(configurators, settings, serviceCollection, fileSystem, bootstrapper)
         {
         }
     }
