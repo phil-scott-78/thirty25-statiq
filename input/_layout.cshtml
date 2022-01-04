@@ -41,12 +41,12 @@
 
     @RenderSection("head", required: false)
 </head>
-    <body class="antialiased bg-slate-100  dark:bg-gray-800 transition-colors">
+    <body class="antialiased text-slate-800 bg-slate-100  dark:bg-gray-800 transition-colors">
         <header class="sticky top-0 left-2 w-full bg-inherit shadow-md py-2 md:py-4 z-50">
             <nav class="mx-auto max-w-3xl px-4 md:px-8 xl:px-0 flex  items-center">
                 <img src="/assets/avatar.svg" alt="Avatar image" height="3rem" width="3rem" class="h-12 w-12 mr-2"/>
                 <h1>
-                    <a class="font-extrabold text-2xl lg:text-4xl text-slate-700 dark:text-blue-300" href="/">
+                    <a class="font-extrabold text-2xl lg:text-4xl text-slate-700 dark:text-slate-300" href="/">
                         @Constants.BlogTitle
                     </a>
                 </h1>
@@ -66,7 +66,7 @@
         </header>
 
         <main class="mx-auto max-w-3xl px-4 md:px-8 xl:px-0 mt-4 mb-4 md:mb-16 font-light">
-            <h2 class="font-bold text-slate-800 dark:text-slate-200 text-2xl lg:font-extrabold lg:text-4xl mb-2 lg:mb-6">@Model.GetString("Title")</h2>
+            <h2 class="font-bold text-slate-700 dark:text-slate-200 text-2xl lg:font-extrabold lg:text-4xl mb-2 lg:mb-6">@Model.GetString("Title")</h2>
             @RenderBody()
         </main>
 
