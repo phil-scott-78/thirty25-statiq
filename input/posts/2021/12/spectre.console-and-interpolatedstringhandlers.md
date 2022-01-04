@@ -2,7 +2,8 @@
 title: Spectre.Console and String Interpolation
 description: You are probably forgetting to escape your markup when using Spectre. Here's how to fix that.
 date: 2021-12-18
-tags: ['Spectre.Console']
+tags: ["Spectre.Console"]
+repository: https://github.com/phil-scott-78/spectre-console-string-interpolation
 ---
 
 A common mistake when using [markup](https://spectreconsole.net/markup) with Spectre.Console is forgetting to escape values when creating your markup strings. Take, for example, this seemingly safe call.
@@ -12,7 +13,7 @@ var name = AnsiConsole.Ask<string>("What's your name?");
 AnsiConsole.MarkupLine($"The value is [blue]{name}[/]");
 ```
 
-This compiles just fine, this runs just fine. And everything is ok until someone enters their name as "Mr. [". 
+This compiles just fine, this runs just fine. And everything is ok until someone enters their name as "Mr. [".
 
 This results in this exception
 
@@ -34,15 +35,15 @@ var name = AnsiConsole.Ask<string>("What's your name?");
 AnsiConsole.MarkupLine($"The value is [blue]{name.EscapeMarkup()}[/]");
 ```
 
-This, I'll admit, is annoying and easy to forget especially on longer lines. But modern problems have modern solutions! Because we are using string interpolation there are a couple of techniques we can use to tackle this. One is by using `FormattableString`. 
+This, I'll admit, is annoying and easy to forget especially on longer lines. But modern problems have modern solutions! Because we are using string interpolation there are a couple of techniques we can use to tackle this. One is by using `FormattableString`.
 
 ## `FormattableString` to the Rescue
 
-[`FormattableString`](https://docs.microsoft.com/en-us/dotnet/api/system.formattablestring?view=net-6.0) has been around since C# 6. Instead of a `string` your method instead takes a `FormattableString` as the parameter telling the compiler you don't want it to do any magic but rather send the interpolated string right to your method. This results in all the format data to be passed rather than the results of the formatting. 
+[`FormattableString`](https://docs.microsoft.com/en-us/dotnet/api/system.formattablestring?view=net-6.0) has been around since C# 6. Instead of a `string` your method instead takes a `FormattableString` as the parameter telling the compiler you don't want it to do any magic but rather send the interpolated string right to your method. This results in all the format data to be passed rather than the results of the formatting.
 
 We can add a new method named `MarkupLineInterpolated` that accepts this parameter and auto-escape the string arguments. `FormattableString` exposes a method named `GetArguments` that contains an array of all the interpolated expression items, and a `Format` property containing the format string that defined the interpolated example. E.g. with the previous example `GetArguments()` returns an array with a single item of our string `name` and the `Format` property is set to `The value is [blue]{0}[/]`.
 
-Given these two properties we can take pass into `string.Format` our format string and a new array with all string values formatted. 
+Given these two properties we can take pass into `string.Format` our format string and a new array with all string values formatted.
 
 ```csharp
 static class AnsiConsoleExtensions
@@ -77,7 +78,7 @@ A feature introduced with C# 10 is [interpolated string handlers](https://docs.m
 
 When the compiler encounters an interpolated string it'll, by default, use the aforementioned `DefaultInterpolatedStringHandler`. If we let the compiler know we have our own handler, we can override that behavior.
 
-Before we start, I got to warn you that the syntax for these handlers isn't exactly obvious. Remember the compiler is using this during build time so it'll have some nuances that don't match common C# patterns. 
+Before we start, I got to warn you that the syntax for these handlers isn't exactly obvious. Remember the compiler is using this during build time so it'll have some nuances that don't match common C# patterns.
 
 To get started, we need to define our handler. The minimal example for this will be
 
@@ -85,10 +86,10 @@ To get started, we need to define our handler. The minimal example for this will
 [InterpolatedStringHandler]
 public struct MarkupInterpolatedStringHandler
 {
-    public MarkupInterpolatedStringHandler(int literalLength, int formattedCount){        
+    public MarkupInterpolatedStringHandler(int literalLength, int formattedCount){
     }
 }
-```        
+```
 
 The attribute marks our struct as the interpolated string handler. The constructor our struct must have these two parameters. `literalLength` is the number of literal characters in the interpolate string. `formattedCount` is the number of interpolated expressions. E.g. given the interpolated string
 
@@ -96,7 +97,7 @@ The attribute marks our struct as the interpolated string handler. The construct
 var s = $"My name is {name} and my age is {age}"
 ```
 
-then `literalLength` would be 26 and `formattedCount` would be 2. This data can be calculated at compile time so it's cheap to include for runtime usage. Fun fact, the default usage uses it to preallocate the buffer under the assumption that total length of the created string is definitely going to be `literalLength` characters long plus they estimate the average expression item is about 11 characters long. So we'll borrow that and use it to create a default sized `StringBuilder` instance. 
+then `literalLength` would be 26 and `formattedCount` would be 2. This data can be calculated at compile time so it's cheap to include for runtime usage. Fun fact, the default usage uses it to preallocate the buffer under the assumption that total length of the created string is definitely going to be `literalLength` characters long plus they estimate the average expression item is about 11 characters long. So we'll borrow that and use it to create a default sized `StringBuilder` instance.
 
 Finally we add a method named `ToStringAndClear` which is a common name that is used to finally build out the results of the handler. In our case that's calling `ToString` on our `StringBuilder` and returning the value.
 
@@ -120,22 +121,22 @@ Our next step is to add the methods for building this up the string. This is a b
 The syntax for these two methods is
 
 ```csharp
-public void AppendLiteral(string s) => _markupStringBuilder.Append(s);    
+public void AppendLiteral(string s) => _markupStringBuilder.Append(s);
 public void AppendFormatted<T>(T value) => _markupStringBuilder.Append(value);
 ```
 
 At this point, we have the bare minimum for the compiler to use our handler! It doesn't escape or even handle other simple cases like the default handler. But it's our handler and it's a start. Now we need to tell the compiler when to use it.
 
-We'll want to use it in place of `string` in a method parameter. To the best of my knowledge, that's the only way these can be used. For example, given a method 
+We'll want to use it in place of `string` in a method parameter. To the best of my knowledge, that's the only way these can be used. For example, given a method
 
 ```csharp
 void MarkupLine(string s)
 {
     console.MarkupLine(s);
-} 
+}
 ```
 
-we rewrite it to be 
+we rewrite it to be
 
 ```csharp
 void MarkupLineInterpolated(ref MarkupInterpolatedStringHandler handler)
@@ -144,7 +145,7 @@ void MarkupLineInterpolated(ref MarkupInterpolatedStringHandler handler)
 }
 ```
 
-If you set a breakpoint in your handler on and execute your application you'll see it being used. But let's expand it to actually escape our markup. To do so we need to expand our `AppendFormat` call. 
+If you set a breakpoint in your handler on and execute your application you'll see it being used. But let's expand it to actually escape our markup. To do so we need to expand our `AppendFormat` call.
 
 For our usage, it's really surprisingly easy. We just add this method
 
@@ -158,7 +159,7 @@ The compiler will look at our expression item holes and when it encounters a str
 public void AppendFormatted(int i) => _markupStringBuilder.Append(i);
 ```
 
- There isn't a ton of documentation on how this works or best practices, so I highly recommend reading the source for [`DefaultInterpolatedStringHandler`](https://github.com/dotnet/runtime/blob/v6.0.1/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/DefaultInterpolatedStringHandler.cs#L208). They break down the design decisions on which types they decided to handle because things could get out of control. For now though, we'll stick with our three methods giving us the the current handler
+There isn't a ton of documentation on how this works or best practices, so I highly recommend reading the source for [`DefaultInterpolatedStringHandler`](https://github.com/dotnet/runtime/blob/v6.0.1/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/DefaultInterpolatedStringHandler.cs#L208). They break down the design decisions on which types they decided to handle because things could get out of control. For now though, we'll stick with our three methods giving us the the current handler
 
 ```csharp
 [InterpolatedStringHandler]
@@ -175,12 +176,12 @@ public struct MarkupInterpolatedStringHandler
 
     // make sure to escape all strings.
     public void AppendFormatted(string s) => _markupStringBuilder.Append(s.EscapeMarkup());
-    
+
     // anything other than a string will be handled by this catch all.
     public void AppendFormatted<T>(T value) => _markupStringBuilder.Append($"{value}");
 
     public string ToStringAndClear() => _markupStringBuilder.ToString();
-    
+
 }
 ```
 
@@ -228,13 +229,13 @@ If it feels like something is missing, then you are correct. Let's say we instea
 MarkupLineInterpolated($"Today is {date:f}.");
 ```
 
-Compiling this we now get the error 
+Compiling this we now get the error
 
 ```text
 Program.cs(9, 40): [CS1739] The best overload for 'AppendFormatted' does not have a parameter named 'format'`
 ```
 
-At least this is a compile error, and not failing silently. But this makes sense - we never wrote any code for handling formats. In fact, there is a lot of cases we didn't handle. [`DefaultInterpolatedStringHandler`](https://github.com/dotnet/runtime/blob/v6.0.1/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/DefaultInterpolatedStringHandler.cs) weights in at almost 700 lines and we are way, way behind that. 
+At least this is a compile error, and not failing silently. But this makes sense - we never wrote any code for handling formats. In fact, there is a lot of cases we didn't handle. [`DefaultInterpolatedStringHandler`](https://github.com/dotnet/runtime/blob/v6.0.1/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/DefaultInterpolatedStringHandler.cs) weights in at almost 700 lines and we are way, way behind that.
 
 With all the work and thought they've put into their implementation there is only one thing to do - toss our implementation out the door and wrap theirs.
 
@@ -260,11 +261,11 @@ public ref struct WrappedMarkupInterpolatedStringHandler
 }
 ```
 
-With this in place we now need to wrap all their methods. The easiest way I know to do this is with ReSharper or JetBrains Rider and use their [Generate Delegating Members](https://www.jetbrains.com/help/rider/Code_Generation__Delegating_Members.html) feature. You'll want to select all the methods of our `_innerHandler`. 
+With this in place we now need to wrap all their methods. The easiest way I know to do this is with ReSharper or JetBrains Rider and use their [Generate Delegating Members](https://www.jetbrains.com/help/rider/Code_Generation__Delegating_Members.html) feature. You'll want to select all the methods of our `_innerHandler`.
 
 ![delegate generating members](generate-delegating-members.png)
 
-After running this (or typing it out yourself) our new class should look something like 
+After running this (or typing it out yourself) our new class should look something like
 
 ```csharp
 
@@ -334,7 +335,7 @@ public ref struct WrappedMarkupInterpolatedStringHandler3
 }
 ```
 
-So that's a significant amount of code that's been added. Thankfully we only need to touch a small bit of it. Our only focus is on text data, so we need to look for `AppendFormat` methods taking in `string` or `ReadOnlySpan<char>`. The later poses some problems though. Our built `MarkupEscape` relies on the built in `Replace` method which doesn't exist on a `ReadonlySpan<char>`. We are going to have to write our implementation ourselves. Luckily, this is a pretty easy task. All we need to do is scan the string and use double brackets anytime we encounter a single bracket. Our code for our custom escape method looks like 
+So that's a significant amount of code that's been added. Thankfully we only need to touch a small bit of it. Our only focus is on text data, so we need to look for `AppendFormat` methods taking in `string` or `ReadOnlySpan<char>`. The later poses some problems though. Our built `MarkupEscape` relies on the built in `Replace` method which doesn't exist on a `ReadonlySpan<char>`. We are going to have to write our implementation ourselves. Luckily, this is a pretty easy task. All we need to do is scan the string and use double brackets anytime we encounter a single bracket. Our code for our custom escape method looks like
 
 ```csharp
 private void AppendEscaped(ReadOnlySpan<char> text)
@@ -367,7 +368,7 @@ private void AppendEscaped(ReadOnlySpan<char> text)
     // add whatever text we've been tracking since the last scan started.
     _innerHandler.AppendFormatted(text[startPos..]);
 }
-```    
+```
 
 We can now use this for both the `string` and `ReadOnlySpan<char>` `AppendFormat` calls.
 
@@ -477,23 +478,21 @@ public class SingleMarkupEscapeBenchmark
 }
 ```
 
-|                           Method |     Mean | Ratio | Allocated |
-|--------------------------------- |---------:|------:|----------:|
-|                    ClassicMarkup | 45.60 us |  1.00 |    211 KB |
-|                FormattableString | 60.28 us |  1.32 |    236 KB |
+| Method                           |     Mean | Ratio | Allocated |
+| -------------------------------- | -------: | ----: | --------: |
+| ClassicMarkup                    | 45.60 us |  1.00 |    211 KB |
+| FormattableString                | 60.28 us |  1.32 |    236 KB |
 | WrappedInterpolatedStringHandler | 36.42 us |  0.80 |    171 KB |
-
 
 Wow. Not only are we faster than calling `EscapeMarkup` manually, we are also allocation a half KB less per call. `FormattableString`, unfortunately, can't say it has a huge improvement but we knew we were sacrificing performance for developer productivity and safety. But with our custom handler we have both!
 
-Eagle eyed readers probably already noticed something with the benchmarks - I'm not calling `Append` directly but rather putting them in a string variable and then calling the append method. The reason? Because without it `ClassicMarkup` beats the pants off of us in allocated memory. 
+Eagle eyed readers probably already noticed something with the benchmarks - I'm not calling `Append` directly but rather putting them in a string variable and then calling the append method. The reason? Because without it `ClassicMarkup` beats the pants off of us in allocated memory.
 
-|                           Method |     Mean | Ratio | Allocated |
-|--------------------------------- |---------:|------:|----------:|
-|                    ClassicMarkup | 38.86 us |  1.00 |    157 KB |
-|                FormattableString | 61.06 us |  1.57 |    236 KB |
+| Method                           |     Mean | Ratio | Allocated |
+| -------------------------------- | -------: | ----: | --------: |
+| ClassicMarkup                    | 38.86 us |  1.00 |    157 KB |
+| FormattableString                | 61.06 us |  1.57 |    236 KB |
 | WrappedInterpolatedStringHandler | 36.30 us |  0.93 |    171 KB |
-
 
 How can they do this? Well, they have their own custom interpolated string handler specifically for being used within a `StringBuilder` named [`AppendInterpolatedStringHandler`](https://github.com/dotnet/runtime/blob/v6.0.1/src/libraries/System.Private.CoreLib/src/System/Text/StringBuilder.cs#L2630). The advantage here is that rather than build the string and then add it to the `StringBuilder` they are able to go right at the `StringBuilder`. I'm forcing this optimization to be skipped by storing as a string first. Now, is calling escape markup in a `StringBuilder` common? Absolutely not. Is this something I can't let stand? You know it. Thankfully we are now also experts at leveraging the built-in handlers so this should be a breeze. Time to create a second handler named `WrappedAppendStringHandler`
 
@@ -625,9 +624,9 @@ This matches the pattern of a regular `StringBuilder` call returning the instanc
 
 ```text
   MarkupInStringBuilderBenchmark.cs(73, 17): [CS7036] There is no argument given that corresponds to the required formal parameter 'sb' of 'WrappedAppendStringHandler.WrappedAppendStringHandler(int, int, StringBuilder)'
-```  
+```
 
-Remember, we added a new parameter to our constructor for the `StringBuilder` to be used. But there is no magic in automatically wiring it up. We still need to tell the compiler how to do this manually. To do so, we use the [`InterpolatedStringHandlerArgumentAttribute`](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.interpolatedstringhandlerargumentattribute?view=net-6.0). This attribute lets us tell the compiler match up the constructor parameters to the parameters of our method call. We add it to our handler and tell it to use the `stringBuilder` parameter as an argument. This changes our call to be 
+Remember, we added a new parameter to our constructor for the `StringBuilder` to be used. But there is no magic in automatically wiring it up. We still need to tell the compiler how to do this manually. To do so, we use the [`InterpolatedStringHandlerArgumentAttribute`](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.interpolatedstringhandlerargumentattribute?view=net-6.0). This attribute lets us tell the compiler match up the constructor parameters to the parameters of our method call. We add it to our handler and tell it to use the `stringBuilder` parameter as an argument. This changes our call to be
 
 ```csharp
  public static StringBuilder AppendEscapeMarkup(
@@ -654,7 +653,7 @@ foreach (var data in _testData)
 return sb.ToString();
 ```
 
-This matches the previous benchmark examples, but relies on our new `AppendEscapeMarkup`. Compiling this gives some new generated code. 
+This matches the previous benchmark examples, but relies on our new `AppendEscapeMarkup`. Compiling this gives some new generated code.
 
 ```csharp
 StringBuilder stringBuilder1 = new StringBuilder();
@@ -683,15 +682,14 @@ You can see that we are instantiating the `StringBuilder` once. Within the loop 
 
 So how's the performance?
 
-|                           Method |     Mean | Ratio | Allocated |
-|--------------------------------- |---------:|------:|----------:|
-|                    ClassicMarkup | 38.59 us |  1.00 |    157 KB |
-|                FormattableString | 60.46 us |  1.57 |    236 KB |
+| Method                           |     Mean | Ratio | Allocated |
+| -------------------------------- | -------: | ----: | --------: |
+| ClassicMarkup                    | 38.59 us |  1.00 |    157 KB |
+| FormattableString                | 60.46 us |  1.57 |    236 KB |
 | WrappedInterpolatedStringHandler | 36.13 us |  0.94 |    171 KB |
-|      WrappedStringBuilderHandler | 31.90 us |  0.83 |    116 KB |
+| WrappedStringBuilderHandler      | 31.90 us |  0.83 |    116 KB |
 
-
-We are the champions. A significant drop in allocated memory all while keeping our performance top notch. 
+We are the champions. A significant drop in allocated memory all while keeping our performance top notch.
 
 ## Extending Our Handlers
 
@@ -728,7 +726,7 @@ Now when the compiler comes across a `RawText` instance in the interpolated stri
 
 ## What About Overloads?
 
-One thing you'll notice is that we are using a new name, `MarkupLineInterpolated`, rather than an overload of `MarkupLine`. The reason is that, [by design](https://github.com/dotnet/roslyn/issues/46), the `string` version of the method takes precedence over the `FormattableString` and also our `MarkupInterpolatedStringHandler` . Another big problem here is that your code will compile and run just fine until someone enters a value and it isn't escaped. Ouch. 
+One thing you'll notice is that we are using a new name, `MarkupLineInterpolated`, rather than an overload of `MarkupLine`. The reason is that, [by design](https://github.com/dotnet/roslyn/issues/46), the `string` version of the method takes precedence over the `FormattableString` and also our `MarkupInterpolatedStringHandler` . Another big problem here is that your code will compile and run just fine until someone enters a value and it isn't escaped. Ouch.
 
 There are hacks around this. For example, EF Core 3 uses a custom type named [`RawSqlString`](https://github.com/dotnet/efcore/blob/v3.1.22/src/EFCore.Relational/RawSqlString.cs) as a parameter rather than string due to the implicit conversion handling of the compiler which allows both a string and `FormattableString` to co-exist on an overload. You'll also notice this class is marked as `Obsolete`. Besides the cumbersome use, it can also introduce subtle issues.
 
@@ -736,19 +734,19 @@ Take this call, for example, with our fictional version of `MarkupLine` that has
 
 ```csharp
 console.MarkupLine($"The value is [blue]{name}[/]" +
-                               Environment.NewLine + 
+                               Environment.NewLine +
                                $"My number is {Random.Shared.Next()}");
 ```
 
 It looks innocent enough, but the compiler will convert this to a string THEN send it to our method due to the `Environment.NewLine` concatenation call. Now, without warning, we are no longer passing a `FormattableString` but rather a string! So even our overload with the implicit conversion hack no longer works and our expression items wouldn't be escaped. This is one reason I had to link to an older version of EF Core to show this example; this object could actually [introduce some very subtle SQL injection vulnerabilities](https://github.com/dotnet/efcore/issues/10080).
 
-By having this in a method that only takes `FormattableString` or an interpolated string handler we would get a compiler error if we had an implicit cast to a string, forcing us to rewrite our call. 
+By having this in a method that only takes `FormattableString` or an interpolated string handler we would get a compiler error if we had an implicit cast to a string, forcing us to rewrite our call.
 
 ## Further Reading
 
-I surely didn't do the technical bits justice. Check out these resources for a deeper understanding. 
+I surely didn't do the technical bits justice. Check out these resources for a deeper understanding.
 
-* [String Interpolation in C# 10 and .NET 6](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) by Stephen Toub.
-* [Interpolated strings: advanced usages](https://www.meziantou.net/interpolated-strings-advanced-usages.htm) by Gérald Barré.
-* [Dissecting Interpolated Strings Improvements in C# 10](https://sergeyteplyakov.github.io/Blog/c%2310/2021/11/08/Dissecing-Interpolated-Strings-Improvements-In-CSharp-10.html) by Sergey Teplyakov.
-* [String Interpolation Trickery and Magic with C# 10 and .NET 6](https://btburnett.com/csharp/2021/12/17/string-interpolation-trickery-and-magic-with-csharp-10-and-net-6) by Brant Burnett.
+- [String Interpolation in C# 10 and .NET 6](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) by Stephen Toub.
+- [Interpolated strings: advanced usages](https://www.meziantou.net/interpolated-strings-advanced-usages.htm) by Gérald Barré.
+- [Dissecting Interpolated Strings Improvements in C# 10](https://sergeyteplyakov.github.io/Blog/c%2310/2021/11/08/Dissecing-Interpolated-Strings-Improvements-In-CSharp-10.html) by Sergey Teplyakov.
+- [String Interpolation Trickery and Magic with C# 10 and .NET 6](https://btburnett.com/csharp/2021/12/17/string-interpolation-trickery-and-magic-with-csharp-10-and-net-6) by Brant Burnett.
