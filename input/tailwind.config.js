@@ -1,26 +1,18 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 const colors = require("tailwindcss/colors");
+const theme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-  purge: ["./public/**/*.html"],
-  mode: 'jit',
-  darkMode: false, // or 'media' or 'class'
+  content: ["./public/**/*.html"],
+  darkMode: "class",
   theme: {
     extend: {
       fontFamily: {
         sans: ["Poppins", ...defaultTheme.fontFamily.sans],
-        serif: ["Merriweather", ...defaultTheme.fontFamily.serif],
         mono: ["Cascadia Code", ...defaultTheme.fontFamily.mono],
       },
-      colors: {
-        gray: colors.blueGray,
-        indigo: colors.indigo,
-        red: colors.red,
-        yellow: colors.amber,
-        blue: colors.blue,
-        orange: colors.orange,
-      },
-      container: {
+
+      container: ({ theme }) => ({
         center: true,
         padding: {
           DEFAULT: "2rem",
@@ -30,40 +22,21 @@ module.exports = {
           "2xl": "6rem",
         },
         screens: {
-          sm: defaultTheme.spacing.full,
-          md: defaultTheme.spacing.full,
+          sm: theme("spacing.full"),
+          md: theme("spacing.full"),
           lg: "1024px",
           xl: "1280px",
         },
-      },
-      typography: (theme) => ({
+      }),
+      typography: ({ theme }) => ({
         DEFAULT: {
           css: {
-            color: defaultTheme.colors.gray[900],
-            a: {
-              color: defaultTheme.colors.blue[700],
-              borderBottomWidth: "1px",
-              borderBottomColor: defaultTheme.colors.blue[700],
-              fontWeight: defaultTheme.fontWeight.light,
-              textDecoration: "none",
-              "&:hover": {
-                color: defaultTheme.colors.blue[600],
-                borderBottomColor: defaultTheme.colors.blue[600],
-              },
-            },
-            "pre code": {
-              fontWeight: defaultTheme.fontWeight.light,
+            pre: {
+              fontWeight: theme("fontWeight.light"),
+              boxShadow: theme("boxShadow.md"),
             },
             code: {
-              fontWeight: defaultTheme.fontWeight.light,
-              color: defaultTheme.colors.gray[900],
-              background: defaultTheme.colors.gray[200],
-              borderColor: defaultTheme.colors.gray[300],
-              borderWidth: 1,
-              paddingLeft: defaultTheme.spacing["1"],
-              paddingRight: defaultTheme.spacing["1"],
-              paddingTop: defaultTheme.spacing["0.5"],
-              paddingBottom: defaultTheme.spacing["0.5"],
+              fontWeight: theme("fontWeight.normal"),
             },
             "code::before": {
               content: "&nbsp;",
@@ -71,16 +44,8 @@ module.exports = {
             "code::after": {
               content: "&nbsp;",
             },
-          },
-        },
-        lg: {
-          css: {
-            pre: {
-              lineHeight: defaultTheme.lineHeight.snug,
-            },
-            "pre code": {
-              fontSize: defaultTheme.fontSize.sm,
-              lineHeight: defaultTheme.lineHeight.snug,
+            td: {
+              overflowWrap: "anywhere",
             },
           },
         },

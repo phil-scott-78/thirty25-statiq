@@ -36,16 +36,21 @@
 
     @RenderSection("head", required: false)
 </head>
-    <body class="bg-gray-50">
-        <header class="fixed top-0 left-2 w-full bg-gray-100 shadow py-2 md:py-4 z-50">
+    <body class="antialiased bg-slate-100  dark:bg-gray-800 transition-colors">
+        <header class="sticky top-0 left-2 w-full bg-inherit shadow-md py-2 md:py-4 z-50">
             <nav class="mx-auto max-w-3xl px-4 md:px-8 xl:px-0 flex  items-center">
                 <img src="/assets/avatar.svg" alt="Avatar image" height="3rem" width="3rem" class="h-12 w-12 mr-2"/>
                 <h1>
-                    <a class="font-serif font-light text-2xl lg:text-3xl lg:tracking-wide text-blue-700 flex" href="/">
+                    <a class="font-extrabold text-2xl lg:text-4xl text-slate-700 dark:text-blue-300" href="/">
                         @Constants.BlogTitle
                     </a>
                 </h1>
-                <div class="ml-auto">
+                <div class="ml-auto flex items-center">
+                    <button class="mr-6 dark:text-yellow-300 stroke-1 opacity-80" onclick="swapTheme()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </button>
                     <a class="text-gray-400 hover:text-blue-400 transition-all hover:scale-105" title="Blog source" href="https://github.com/phil-scott-78/thirty25-statiq">
                         <svg width="2rem" height="2rem" class="fill-current" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z" transform="scale(64)" />
@@ -55,8 +60,8 @@
             </nav>
         </header>
 
-        <main class="mx-auto max-w-3xl px-4 md:px-8 xl:px-0 mt-20 md:mt-24 lg:mt-28 mb-4 md:mb-16 font-light">
-            <h2 class="font-serif font-bold text-3xl lg:font-extrabold lg:text-5xl leading-snug mb-2 lg:mb-6">@Model.GetString("Title")</h2>
+        <main class="mx-auto max-w-3xl px-4 md:px-8 xl:px-0 mt-4 mb-4 md:mb-16 font-light">
+            <h2 class="font-bold text-slate-800 dark:text-slate-200 text-2xl lg:font-extrabold lg:text-4xl mb-2 lg:mb-6">@Model.GetString("Title")</h2>
             @RenderBody()
         </main>
 
@@ -68,6 +73,23 @@
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/prism.min.js" integrity="sha512-9+422Bs3A87UkWfp+qV80Nfv9arhbCXKY1rxrF2seorI36mIIstMiuBfyKLF1yH1nnzQkEWq2xrzT4XU3Z+vrA==" crossorigin="anonymous"></script>
 	    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-Q3qGP1uJL/B0sEmu57PKXjCirgPKMbg73OLRbTJ6lfHCVU5zkHqmcTI5EV2fSoPV1MHdKsCBE7m/aS6q0pPjRQ==" crossorigin="anonymous"></script>
+        <script>
+            // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            function swapTheme(){
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    document.documentElement.classList.add('dark');
+                }
+                
+            }
+        </script>
     </body>
 </html>
 
