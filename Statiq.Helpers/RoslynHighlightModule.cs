@@ -87,7 +87,6 @@ public class RoslynHighlightModule : Module
 
         // if prism.js runs client side we want it to skip this one, so mark it as language-none and remove the csharp identifier.
         element.ClassList.Remove("language-csharp");
-        element.ClassList.Add("language-none");
         element.InnerHtml = sb.ToString();
     }
 
