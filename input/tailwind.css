@@ -31,7 +31,7 @@ pre[class*="language-"]::selection,
 pre[class*="language-"] ::selection,
 code[class*="language-"]::selection,
 code[class*="language-"] ::selection {
-  background: #9aa2b1;
+  background: theme("colors.slate.800");
 }
 
 :not(pre) > code[class*="language-"],
@@ -39,15 +39,19 @@ pre[class*="language-"] {
   background: rgba(45, 55, 72, 1);
 }
 
+.token.variable {
+    color: inherit;
+}
+
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: theme("colors.gray.400");
+  color: theme("colors.gray.300");
 }
 
 .token.punctuation {
-  color: #abb2bf;
+    color: theme("colors.gray.300");
 }
 
 .token.selector,
@@ -55,13 +59,16 @@ pre[class*="language-"] {
   color: theme("colors.gray.300");
 }
 
+.token.symbol {
+  color: inherit;
+}
+
 .token.boolean,
 .token.number,
 .token.constant,
-.token.symbol,
 .token.attr-name,
 .token.deleted {
-  color: theme("colors.pink.400");
+  color: theme("colors.blue.300");
 }
 
 .token.string,
@@ -69,32 +76,32 @@ pre[class*="language-"] {
 .token.attr-value,
 .token.builtin,
 .token.inserted {
-  color: theme("colors.emerald.400");
+  color: theme("colors.green.300");
 }
 
 .token.operator,
 .token.entity,
 .token.url,
+.token.symbol,
 .token.class-name,
 .language-css .token.string,
 .style .token.string {
-  color: theme("colors.fuchsia.400");
+  color: theme("colors.cyan.300");
 }
 
 .token.atrule,
 .token.keyword {
-  color: theme("colors.cyan.400");
+  color: theme("colors.indigo.300");
 }
 
 .token.property,
 .token.function {
-  color: theme("colors.amber.400");
+  color: theme("colors.orange.300");
 }
 
 .token.regex,
-.token.important,
-.token.variable {
-  color: theme("colors.red.400");
+.token.important {
+  color: theme("colors.red.300");
 }
 
 .token.important,
