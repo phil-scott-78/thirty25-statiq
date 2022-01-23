@@ -92,6 +92,10 @@ namespace Thirty25.Statiq.Helpers
             var tags = input.GetList<string>("tags") ?? Array.Empty<string>();
 
             await page.GotoAsync($"{url}/SocialCard?title={title}&desc={description}&tags={string.Join(';', tags)}");
+            
+            // This will not just wait for the  page to load over the network, but it'll also give
+            // chrome a chance to complete rendering of the fonts while the wait timeout completes.
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle).ConfigureAwait(false);
             var bytes = await page.ScreenshotAsync();
 
             var destination = input.Destination.InsertSuffix("-social").ChangeExtension("png");
