@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using Statiq.Common;
 using Statiq.Core;
-using Statiq.Html;
 using Statiq.Web;
 using Statiq.Web.Modules;
 using Statiq.Web.Pipelines;
@@ -50,6 +49,7 @@ namespace Thirty25.Statiq.Helpers
         private WebApplication _app;
         private IPlaywright _playwright;
         private IBrowser _browser;
+        private IBrowserContext _context;
 
         protected override async Task BeforeExecutionAsync(IExecutionContext context)
         {
@@ -65,12 +65,16 @@ namespace Thirty25.Statiq.Helpers
 
             _playwright = await Playwright.CreateAsync();
             _browser = await _playwright.Chromium.LaunchAsync();
-
+            _context = await _browser.NewContextAsync(new BrowserNewContextOptions
+            {
+                ViewportSize = new ViewportSize { Width = 1200, Height = 628 },
+            });
             await base.BeforeExecutionAsync(context);
         }
 
         protected override async Task FinallyAsync(IExecutionContext context)
         {
+            await _context.DisposeAsync();
             await _browser.DisposeAsync();
             _playwright.Dispose();
             await _app.DisposeAsync();
@@ -80,19 +84,15 @@ namespace Thirty25.Statiq.Helpers
         protected override async Task<IEnumerable<IDocument>> ExecuteInputAsync(IDocument input,
             IExecutionContext context)
         {
-            var url = _app.Urls.FirstOrDefault(u => u.StartsWith("http://"));
-            var page = await _browser.NewPageAsync(new BrowserNewPageOptions
-                {
-                    ViewportSize = new ViewportSize { Width = 1200, Height = 628 }
-                }
-            );
+            var url = _app.Urls.First(u => u.StartsWith("http://"));
+            var page = await _context.NewPageAsync();
 
             var title = input.GetString("Title");
             var description = input.GetString("Description");
             var tags = input.GetList<string>("tags") ?? Array.Empty<string>();
 
             await page.GotoAsync($"{url}/SocialCard?title={title}&desc={description}&tags={string.Join(';', tags)}");
-            
+
             // This will not just wait for the  page to load over the network, but it'll also give
             // chrome a chance to complete rendering of the fonts while the wait timeout completes.
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle).ConfigureAwait(false);

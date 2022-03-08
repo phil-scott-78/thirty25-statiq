@@ -26,7 +26,8 @@ namespace Thirty25.Statiq.Helpers
     public class PngCompressCommand : EngineCommand<PngCompressSettings>
     {
         public PngCompressCommand(IConfiguratorCollection configurators, Settings settings,
-            IServiceCollection serviceCollection, IFileSystem fileSystem, Bootstrapper bootstrapper) : base(configurators, settings, 
+            IServiceCollection serviceCollection, IFileSystem fileSystem, Bootstrapper bootstrapper) : base(
+            configurators, settings,
             serviceCollection, fileSystem, bootstrapper)
         {
         }

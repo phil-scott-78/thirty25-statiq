@@ -2,14 +2,14 @@
 <div>    
     @foreach (var post in Model)
     {
-        <div class="mb-4 lg:mb-8 pb-4 lg:pb-8 border-b border-slate-200 dark:border-slate-700">
+        <div class="mb-4 lg:mb-8 pb-4 lg:pb-8 border-b border-primary-200/50 dark:border-primary-700/50">
             <div class="flex flex-col md:flex-row md:flex-wrap md:items-baseline">
-                <h3 class="md:w-3/4 md:order-2 md:mb-2" ><a class="text-slate-700 dark:text-slate-300 font-medium text-xl md:text-2xl" href="@Context.GetLink(post)">@post.GetString("Title")</a></h3>
-                <time class="text-xs block min-h-full text-slate-600 dark:text-slate-400 md:text-md md:w-1/4 md:order-1">
+                <h3 class="md:w-3/4 md:order-2 md:mb-2" ><a class="text-primary-700 dark:text-primary-300 font-medium text-xl md:text-2xl" href="@Context.GetLink(post)">@post.GetString("Title")</a></h3>
+                <time class="text-xs block min-h-full text-primary-600 dark:text-primary-400 md:text-md md:w-1/4 md:order-1">
                     @post.GetDateTime("date").ToString("yyyy MMM dd")
                 </time>
                 <article class="md:w-3/4 md:order-3 md:self-end md:ml-auto">
-                    <p class="mb-2  mt-4 md:mt-0 text-md text-slate-600 dark:text-slate-400">@post.GetString("Description")</p>
+                    <p class="mb-2  mt-4 md:mt-0 text-md text-primary-600 dark:text-primary-400">@post.GetString("Description")</p>
                     <div>
                         @Html.Partial("_taglist.cshtml", @post.GetList<string>("tags"))
                     </div>

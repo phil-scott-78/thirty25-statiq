@@ -1,17 +1,8 @@
 @tailwind base;
 @tailwind components;
 
-pre::-webkit-scrollbar {
-  width: theme("spacing.3");
-  height: theme("spacing.3");
-}
-pre::-webkit-scrollbar-track {
-  background: theme("colors.gray.700");
-}
-pre::-webkit-scrollbar-thumb {
-  background-color: theme("colors.gray.400");
-  border: 1px solid theme("colors.gray.800");
-  border-radius: theme("spacing.3");
+.dark{
+    color-scheme: dark;
 }
 
 .token.variable {
