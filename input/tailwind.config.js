@@ -13,7 +13,8 @@ module.exports = {
                 mono: ["Cascadia Code", ...defaultTheme.fontFamily.mono],
             },
             colors: {
-                primary: colors.zinc,
+                base: colors.gray,
+                primary: colors.sky,
             },
             container: ({theme}) => ({
                 center: true,
