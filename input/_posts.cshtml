@@ -5,7 +5,7 @@
         <div class="mb-4 lg:mb-8 pb-4 lg:pb-8 border-b border-base-200/50 dark:border-base-700/50">
             <div class="flex flex-col md:flex-row md:flex-wrap md:items-baseline">
                 <h3 class="md:w-3/4 md:order-2 md:mb-2" ><a class="text-base-700 dark:text-base-300 font-medium text-xl md:text-2xl" href="@Context.GetLink(post)">@post.GetString("Title")</a></h3>
-                <time class="text-xs block min-h-full text-base-600 dark:text-base-400 md:text-md md:w-1/4 md:order-1">
+                <time class="text-xs block min-h-full text-base-600 dark:text-base-400 md:text-sm md:w-1/4 md:order-1">
                     @post.GetDateTime("date").ToString("yyyy MMM dd")
                 </time>
                 <article class="md:w-3/4 md:order-3 md:self-end md:ml-auto">
