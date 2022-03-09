@@ -3,8 +3,14 @@
 }
 @inherits StatiqRazorPage<IDocument>
 
-<p class="mb-1 lg:my-b text-sm dark:text-gray-200">Posted <time>@Document.GetDateTime("date").ToLongDateString()</time></p>
-@Html.Partial($"../_taglist.cshtml", Document.GetList<string>("tags"))
+@section subheading
+{
+    <div class="mt-4">
+        <p class="mb-1 lg:my-b text-sm dark:text-gray-200">Posted <time>@Document.GetDateTime("date").ToLongDateString()</time></p>
+        @Html.Partial($"~/_taglist.cshtml", Document.GetList<string>("tags"))    
+    </div>
+        
+}
 
 <article class="prose dark:prose-invert mt-8 lg:prose-lg max-w-full font-light lg:leading-loose">
     @RenderBody()
