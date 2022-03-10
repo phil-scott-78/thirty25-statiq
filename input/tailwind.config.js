@@ -2,6 +2,14 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 const colors = require("tailwindcss/colors");
 const theme = require("tailwindcss/defaultTheme");
 
+const round = (num) =>
+    num
+        .toFixed(7)
+        .replace(/(\.[0-9]+?)0+$/, '$1')
+        .replace(/\.0$/, '')
+const rem = (px) => `${round(px / 16)}rem`
+const em = (px, base) => `${round(px / base)}em`
+
 module.exports = {
     content: ["./public/**/*.html"],
     darkMode: "class",
@@ -59,6 +67,30 @@ module.exports = {
                         }
                     },
                 },
+                sm: {
+                    css: {
+                        pre: {
+                            fontSize: '.9rem',
+                            lineHeight: '1.25rem',
+                        }
+                    }
+                },
+                base: {
+                    css: {
+                        pre: {
+                            fontSize: '.95rem',
+                            lineHeight: '1.3rem',
+                        }
+                    }
+                },
+                lg: {
+                    css: {
+                        pre: {
+                            fontSize: '.95rem',
+                            lineHeight: '1.45rem',
+                        }
+                    }
+                }
             }),
         },
     },
