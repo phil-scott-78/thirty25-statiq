@@ -1,6 +1,8 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using Statiq.App;
 using Statiq.Common;
+using Statiq.Feeds;
 using Statiq.Web;
 using Statiq.Web.Pipelines;
 using Thirty25.Statiq.Helpers;
@@ -11,6 +13,10 @@ var dotnetPath = System.Environment.GetEnvironmentVariable("DOTNET_PATH") ?? "do
 
 await Bootstrapper.Factory
     .CreateWeb(args)
+    .AddSetting(Keys.Host, "thirty25.com")
+    .AddSetting(Keys.Title, "Thirty25")
+    .AddSetting(FeedKeys.Author, "Phil Scott")
+    .AddSetting(FeedKeys.Copyright, DateTime.UtcNow.Year.ToString())
     .SetOutputPath("public")
     .AddShortcode<FullUrlShortCode>("FullUrl")
     .ModifyPipeline(nameof(Content), pipeline =>
