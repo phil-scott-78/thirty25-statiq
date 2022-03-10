@@ -3,8 +3,8 @@
 @if (Document.ContainsKey(Keys.GroupKey))
 {
   <!-- view all posts for a tag  -->
-  @Html.Partial("_posts.cshtml", Document.GetChildren())
-  @Html.Partial("_nextprevious.cshtml", Document)
+    @await Html.PartialAsync("_posts.cshtml", Document.GetChildren())
+    @await Html.PartialAsync("_nextprevious.cshtml", Document)
 }
 else
 {

@@ -1,4 +1,5 @@
-﻿namespace Thirty25
+﻿
+namespace Thirty25
 {
     public class Constants
     {

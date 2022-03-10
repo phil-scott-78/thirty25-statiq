@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using Statiq.Common;
@@ -61,6 +64,12 @@ namespace Thirty25.Statiq.Helpers
 
             _app = builder.Build();
             _app.MapRazorPages();
+            _app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), @"input/assets")),
+                RequestPath = new PathString("/assets")
+            });
             await _app.StartAsync();
 
             _playwright = await Playwright.CreateAsync();

@@ -51,6 +51,12 @@ module.exports = {
                         td: {
                             overflowWrap: "anywhere",
                         },
+                        a: {
+                            fontWeight: 'inherit',
+                            textDecoration: 'none',
+                            borderBottomWidth: '1px',
+                            borderColor: theme('colors.primary.500')
+                        }
                     },
                 },
             }),

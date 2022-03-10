@@ -8,7 +8,7 @@
         var blogDescription = Model.GetString("Description") ?? Constants.Description;
 
         var card = Outputs
-            .FirstOrDefault(i => i.GetString("DocId") == Model.Id.ToString());
+            .FirstOrDefault(i => i.GetString("DocId") == Document.Id.ToString());
     }   
 
     <title>@bigTitle</title>
@@ -37,14 +37,14 @@
         }
     </script>
 
-    @RenderSection("head", required: false)
+    @await RenderSectionAsync("head", required: false)
 </head>
-<body class="antialiased text-base-800 bg-base-800/10 dark:bg-base-800 transition-colors">
+<body class="antialiased text-base-800 bg-base-300/10 dark:bg-base-800 transition-colors">
 <header class="sticky top-0 left-2 w-full backdrop-blur bg-base-100/80 dark:bg-base-800/80 border-b border-base-900/20 dark:border-base-50/10 shadow-md dark:shadow-lg py-2 md:py-4 z-50">
     <nav class="mx-auto max-w-5xl px-4 md:px-8 xl:px-0 flex  items-center">
-        <img src="/assets/avatar.svg" alt="Avatar image" height="3rem" width="3rem" class="h-12 w-12 mr-2"/>
+        <img src="/assets/avatar.svg" alt="Avatar image" class="inline-block h-10 w-10 md:h-12 md:w-12 mr-4  rounded-full shadow-md bg-gradient-to-br from-primary-800 to-primary-500 dark:from-primary-500 dark:to-primary-300"/>
         <h1>
-            <a class="font-extrabold text-2xl lg:text-4xl text-base-700 dark:text-base-300" href="/">
+            <a class="font-extrabold text-2xl md:text-4xl text-base-700 dark:text-base-300" href="/">
                 @Constants.BlogTitle
             </a>
         </h1>
@@ -66,7 +66,7 @@
 <main class="mx-auto max-w-5xl px-4 md:px-8 xl:px-0 mt-4 mb-4 md:mb-16 font-light">
     <header class="mt-6 mb-4 lg:mb-8">
         <h2 class="font-bold text-primary-700/90 dark:text-primary-500/90 text-3xl lg:font-extrabold lg:text-4xl ">@Model.GetString("Title")</h2>
-        @RenderSection("subheading", required: false)
+        @await RenderSectionAsync("subheading", required: false)
     </header>
     
     @RenderBody()

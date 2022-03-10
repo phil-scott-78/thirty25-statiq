@@ -1,8 +1,11 @@
-﻿using Statiq.App;
+﻿using JetBrains.Annotations;
+using Statiq.App;
 using Statiq.Common;
 using Statiq.Web;
 using Statiq.Web.Pipelines;
 using Thirty25.Statiq.Helpers;
+
+[assembly: AspMvcPartialViewLocationFormat("~/input/{0}.cshtml")]
 
 var dotnetPath = System.Environment.GetEnvironmentVariable("DOTNET_PATH") ?? "dotnet";
 
