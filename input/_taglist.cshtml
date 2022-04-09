@@ -4,8 +4,8 @@
     @foreach (var tag in Model)
     {
         var link = @Context.GetLink($"tags/{NormalizedPath.OptimizeFileName(tag)}/index.html");
-        <li class="text-xs md:text-sm py-1 px-2 md:py-2 md:px-4 text-primary-100 bg-primary-700/80 border border-primary-600/80 dark:text-base-100 dark:bg-primary-900/75 dark:hover:bg-base-900 dark:border-base-800 rounded md:rounded-md">
-            <a href="@link"> @tag</a>
+        <li>
+            <a class="text-xs transition-colors md:text-sm py-1 px-2 md:py-2 md:px-4 text-primary-100 bg-primary-700/80 border border-primary-600/80 dark:text-base-100 dark:bg-primary-900/75 dark:hover:bg-base-900 dark:border-base-800 rounded md:rounded-md" href="@link"> @tag</a>
         </li>
     }
 </ul>

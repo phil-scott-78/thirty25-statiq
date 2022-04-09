@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ConcurrentCollections;
 using MonorailCss;
 using MonorailCss.Css;
+using MonorailCss.Plugins;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Web.Pipelines;
@@ -17,7 +18,6 @@ public class Monorail : Pipeline
 {
     public Monorail()
     {
-
         Deployment = true;
         ExecutionPolicy = ExecutionPolicy.Normal;
         Dependencies.AddRange(
@@ -33,10 +33,7 @@ public class Monorail : Pipeline
             new JitCss()
         };
 
-        OutputModules = new ModuleList
-        {
-            new WriteFiles()
-        };
+        OutputModules = new ModuleList { new WriteFiles() };
     }
 }
 
@@ -46,24 +43,46 @@ public class JitCss : Module
     {
         var results = new ConcurrentHashSet<string>();
 
-        foreach (var result in await context.Inputs.ParallelSelectAsync(async input => await ParseCssClassesAsync(input)))
+        foreach (var result in await context.Inputs.ParallelSelectAsync(
+                     async input => await ParseCssClassesAsync(input)))
         {
             results.AddRange(result);
         }
+
+        var proseSettings = new Prose.Settings()
+        {
+            CustomSettings = designSystem => new Dictionary<string, CssSettings>()
+            {
+                {
+                    "DEFAULT", new CssSettings()
+                    {
+                        ChildRules = new CssRuleSetList()
+                        {
+                            new("a",
+                                new CssDeclarationList()
+                                {
+                                    new(CssProperties.FontWeight, "inherit"),
+                                    new(CssProperties.TextDecoration, "none"),
+                                    new(CssProperties.BorderBottomWidth, "1px"),
+                                    new(CssProperties.BorderBottomColor,
+                                        designSystem.Colors[ColorNames.Blue][ColorLevels._500].AsRgbWithOpacity("75%"))
+                                })
+                        }
+                    }
+                }
+            }.ToImmutableDictionary()
+        };
 
         var framework = new CssFramework(DesignSystem.Default with
             {
                 Colors = DesignSystem.Default.Colors.AddRange(
                     new Dictionary<string, ImmutableDictionary<string, CssColor>>()
                     {
-                        {
-                            "primary", DesignSystem.Default.Colors[ColorNames.Sky]
-                        },
-                        {
-                            "base", DesignSystem.Default.Colors[ColorNames.Gray]
-                        },
+                        { "primary", DesignSystem.Default.Colors[ColorNames.Sky] },
+                        { "base", DesignSystem.Default.Colors[ColorNames.Gray] },
                     })
             })
+            .WithSettings(proseSettings)
             .Apply("body", "font-sans")
             .Apply(
                 ".token.comment,.token.prolog,.token.doctype,.token.cdata,.token.punctuation,.token.selector,.token.tag",
