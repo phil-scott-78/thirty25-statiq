@@ -8,8 +8,6 @@
     <NoWarn>MVC1000</NoWarn>
   </PropertyGroup>
 
-  
-
   <ItemGroup>
     <PackageReference Include="ByteSize" Version="2.1.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
@@ -19,9 +17,9 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.11.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.11.0" />
     <PackageReference Include="Microsoft.Playwright" Version="1.19.1" />
+    <PackageReference Include="MonorailCss" Version="0.0.0-preview.0.2.1" />
     <PackageReference Include="SimpleExec" Version="8.0.0" />
     <PackageReference Include="Statiq.Web" Version="1.0.0-beta.44" />
     <PackageReference Include="TinyPNG" Version="3.3.3" />
   </ItemGroup>
-  
 </Project>
