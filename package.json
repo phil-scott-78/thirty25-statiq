@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "install-dotnet": "./dotnet-install.sh --channel 6.0 --install-dir ~/.net/",
-    "build:tailwind": "tailwind build -i ./input/tailwind.css  -c ./input/tailwind.config.js  -o ./public/assets/styles.css",
     "build": "if-env VERCEL=1 && npm run build:vercel || npm run build:dev",
     "build:vercel": "npm run install-dotnet && cross-env NODE_ENV=production DOTNET_PATH=\"/vercel/.net/dotnet\" ASPNETCORE_URLS=\"http://localhost:5500\" ~/.net/dotnet run --urls \"http://localhost:322021\"",
     "build:dev": "dotnet run",
@@ -14,10 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tailwindcss/typography": "^0.5.2",
-    "autoprefixer": "^10.2.6",
-    "if-env": "^1.0.4",
-    "tailwindcss": "^3.0.23"
+    "if-env": "^1.0.4"
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
