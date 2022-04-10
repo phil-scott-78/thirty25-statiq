@@ -6,7 +6,7 @@
 @section subheading
 {
     <div class="mt-4">
-        <p class="mb-1 lg:my-b text-sm dark:text-gray-200">Posted <time>@Document.GetDateTime("date").ToLongDateString()</time></p>
+        <p class="mb-1 lg:my-4 text-sm dark:text-gray-200">Posted <time>@Document.GetDateTime("date").ToLongDateString()</time></p>
 
         @await Html.PartialAsync($"_taglist", Document.GetList<string>("tags"))
     </div>
