@@ -49,53 +49,9 @@ public class JitCss : Module
             results.AddRange(result);
         }
 
-        var proseSettings = new Prose.Settings()
-        {
-            CustomSettings = designSystem => new Dictionary<string, CssSettings>()
-            {
-                {
-                    "DEFAULT", new CssSettings()
-                    {
-                        ChildRules = new CssRuleSetList()
-                        {
-                            new("a",
-                                new CssDeclarationList()
-                                {
-                                    new(CssProperties.FontWeight, "inherit"),
-                                    new(CssProperties.TextDecoration, "none"),
-                                    new(CssProperties.BorderBottomWidth, "1px"),
-                                    new(CssProperties.BorderBottomColor,
-                                        designSystem.Colors[ColorNames.Blue][ColorLevels._500].AsRgbWithOpacity("75%"))
-                                })
-                        }
-                    }
-                }
-            }.ToImmutableDictionary()
-        };
+        
 
-        var framework = new CssFramework(DesignSystem.Default with
-            {
-                Colors = DesignSystem.Default.Colors.AddRange(
-                    new Dictionary<string, ImmutableDictionary<string, CssColor>>()
-                    {
-                        { "primary", DesignSystem.Default.Colors[ColorNames.Sky] },
-                        { "base", DesignSystem.Default.Colors[ColorNames.Gray] },
-                    })
-            })
-            .WithSettings(proseSettings)
-            .Apply("body", "font-sans")
-            .Apply(
-                ".token.comment,.token.prolog,.token.doctype,.token.cdata,.token.punctuation,.token.selector,.token.tag",
-                "text-gray-300")
-            .Apply(".token.boolean,.token.number,.token.constant,.token.attr-name,.token.deleted", "text-blue-300")
-            .Apply(".token.string,.token.char,.token.attr-value,.token.builtin,.token.inserted", "text-green-300")
-            .Apply(
-                ".token.operator,.token.entity,.token.url,.token.symbol,.token.class-name,.language-css .token.string,.style .token.string",
-                "text-cyan-300")
-            .Apply(".token.atrule,.token.keyword", "text-indigo-300")
-            .Apply(".token.property,.token.function", "text-orange-300")
-            .Apply(".token.regex,.token.important", "text-red-300");
-
+        var framework = context.GetService(typeof(CssFramework)) as CssFramework ?? new CssFramework(DesignSystem.Default);
         var style = framework.Process(results.ToArray());
 
         return context.Inputs.Add(context.CreateDocument(context.GetString(Constants.CssFile),
