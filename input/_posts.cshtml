@@ -9,7 +9,7 @@
                     @post.GetDateTime("date").ToString("yyyy MMM dd")
                 </time>
                 <article class="md:w-3/4 md:order-3 md:self-end md:ml-auto">
-                    <p class="mb-2  mt-4 md:mt-0 text-md text-base-600 dark:text-base-400">@post.GetString("Description")</p>
+                    <p class="mb-2 mt-4 md:mt-0 text-base-600 dark:text-base-400">@post.GetString("Description")</p>
                     <div>
                         @await Html.PartialAsync("_taglist.cshtml", @post.GetList<string>("tags"))
                     </div>

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using ConcurrentCollections;
 using MonorailCss;
-using MonorailCss.Css;
-using MonorailCss.Plugins;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Web.Pipelines;
@@ -49,10 +46,10 @@ public class JitCss : Module
             results.AddRange(result);
         }
 
-        
-
         var framework = context.GetService(typeof(CssFramework)) as CssFramework ?? new CssFramework(DesignSystem.Default);
-        var style = framework.Process(results.ToArray());
+        var cssClasses = results.ToArray();
+        var r = string.Join(Environment.NewLine, cssClasses.Select(i => $"\"{i}\",").ToArray());
+        var style = framework.Process(cssClasses);
 
         return context.Inputs.Add(context.CreateDocument(context.GetString(Constants.CssFile),
             context.GetContentProvider(style, MediaTypes.Css)));
