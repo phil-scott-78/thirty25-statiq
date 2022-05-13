@@ -46,10 +46,8 @@ public class JitCss : Module
             results.AddRange(result);
         }
 
-        var framework = context.GetService(typeof(CssFramework)) as CssFramework ?? new CssFramework(DesignSystem.Default);
-        var cssClasses = results.ToArray();
-        var r = string.Join(Environment.NewLine, cssClasses.Select(i => $"\"{i}\",").ToArray());
-        var style = framework.Process(cssClasses);
+        var framework = context.GetService(typeof(CssFramework)) as CssFramework ?? new CssFramework();
+        var style = framework.Process(results);
 
         return context.Inputs.Add(context.CreateDocument(context.GetString(Constants.CssFile),
             context.GetContentProvider(style, MediaTypes.Css)));

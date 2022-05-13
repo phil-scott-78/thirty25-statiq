@@ -13,6 +13,7 @@ using Statiq.Web;
 using Statiq.Web.Pipelines;
 using Thirty25;
 using Thirty25.Statiq.Helpers;
+using ISettings = MonorailCss.Plugins.ISettings;
 
 [assembly: AspMvcPartialViewLocationFormat("~/input/{0}.cshtml")]
 
@@ -67,27 +68,36 @@ CssFramework GetCssFramework()
             }
         }.ToImmutableDictionary()
     };
-    
-    return new CssFramework(DesignSystem.Default with
+
+    return new CssFramework(
+        new CssFrameworkSettings()
         {
-            Colors = DesignSystem.Default.Colors.AddRange(
-                new Dictionary<string, ImmutableDictionary<string, CssColor>>()
+            DesignSystem = DesignSystem.Default with
+            {
+                Colors = DesignSystem.Default.Colors.AddRange(
+                    new Dictionary<string, ImmutableDictionary<string, CssColor>>()
+                    {
+                        { "primary", DesignSystem.Default.Colors[ColorNames.Sky] },
+                        { "base", DesignSystem.Default.Colors[ColorNames.Gray] },
+                    })
+            },
+            PluginSettings = new List<ISettings> { proseSettings },
+            Applies = new Dictionary<string, string>
+            {
+                { "body", "font-sans" },
                 {
-                    { "primary", DesignSystem.Default.Colors[ColorNames.Sky] },
-                    { "base", DesignSystem.Default.Colors[ColorNames.Gray] },
-                })
-        })
-        .WithSettings(proseSettings)
-        .Apply("body", "font-sans")
-        .Apply(
-            ".token.comment,.token.prolog,.token.doctype,.token.cdata,.token.punctuation,.token.selector,.token.tag",
-            "text-gray-300")
-        .Apply(".token.boolean,.token.number,.token.constant,.token.attr-name,.token.deleted", "text-blue-300")
-        .Apply(".token.string,.token.char,.token.attr-value,.token.builtin,.token.inserted", "text-green-300")
-        .Apply(
-            ".token.operator,.token.entity,.token.url,.token.symbol,.token.class-name,.language-css .token.string,.style .token.string",
-            "text-cyan-300")
-        .Apply(".token.atrule,.token.keyword", "text-indigo-300")
-        .Apply(".token.property,.token.function", "text-orange-300")
-        .Apply(".token.regex,.token.important", "text-red-300");
+                    ".token.comment,.token.prolog,.token.doctype,.token.cdata,.token.punctuation,.token.selector,.token.tag",
+                    "text-gray-300"
+                },
+                { ".token.boolean,.token.number,.token.constant,.token.attr-name,.token.deleted", "text-blue-300" },
+                { ".token.string,.token.char,.token.attr-value,.token.builtin,.token.inserted", "text-green-300" },
+                {
+                    ".token.operator,.token.entity,.token.url,.token.symbol,.token.class-name,.language-css .token.string,.style .token.string",
+                    "text-cyan-300"
+                },
+                { ".token.atrule,.token.keyword", "text-indigo-300" },
+                { ".token.property,.token.function", "text-orange-300" },
+                { ".token.regex,.token.important", "text-red-300" },
+            }
+        });
 }
