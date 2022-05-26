@@ -27,11 +27,11 @@ With that in mind (and after I read a couple of articles around creating dotnet 
 
 Because dotnet-soddi is a dotnet tool, you install it using the `dotnet tool install` command. As of right now, it's still in (very) pre-release so a version number will be needed e.g.
 
-You can also clone and run it from it's repository at <https://github.com/phil-scott-78/dotnet-soddi>
-
 ```bash
 dotnet tool install --global dotnet-soddi --version 0.1.1
 ```
+
+You can also clone and run it from it's repository at <https://github.com/phil-scott-78/dotnet-soddi>.
 
 Once installed there are four main commands
 

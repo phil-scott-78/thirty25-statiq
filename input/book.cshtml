@@ -1,6 +1,7 @@
 ﻿@{
     Layout = null;
 }
+@using AngleSharp
 @inherits StatiqRazorPage<IDocument>
 
 <!DOCTYPE html>
@@ -187,10 +188,36 @@
                 text-decoration: none;;
             }
             
-            .chapter a:after {
+            .chapter a[href]:after {
             	content: " [" attr(href) "] ";
             	color:  #666;
             	font-size:  .9rem;
+            }
+            
+            .chapter p {
+            
+            }
+            
+            .chapter table {
+                width: 100%;
+                table-layout: auto;
+                text-align: left;
+                margin-top: 2em;
+                margin-bottom: 2em;
+                font-size: 0.875em;
+                line-height: 1.7142857;
+            }
+            
+            .chapter table thead tr{
+                border-bottom: 1px solid #ccc;
+            }
+            
+            .chapter table tbody tr{
+                border-bottom: 1px solid #ccc;
+            }
+            
+            .chapter table tbody tr:last-child{
+                border-bottom: none;
             }
             
             #toc {
@@ -246,8 +273,50 @@
 @foreach (var doc in allChildren)
 {
     {
-        var content = await doc.GetContentStringAsync();
+        var path = doc.Source.GetRelativeInputPath().Parent;
+        var parsedContent = await doc.ParseHtmlAsync();
 
+        foreach (var image in parsedContent.Images)
+        {
+            var src = image.GetAttribute("src");
+            if (src == default)
+            {
+                continue;
+            }
+
+            var imagePath = new NormalizedPath(src);
+            if (imagePath.IsRelative)
+            {
+                var newPath = path.Combine(imagePath);
+                image.SetAttribute("src", newPath.FullPath);
+            }
+        }
+
+        foreach (var link in parsedContent.Links)
+        {
+            var href = link.GetAttribute("href");
+
+            if (link.TextContent == href)
+            {
+                link.RemoveAttribute("href");
+            }
+            else
+            {
+                if (href == default || href.StartsWith("http"))
+                {
+                    continue;
+                }
+
+                var imagePath = new NormalizedPath(href);
+                if (imagePath.IsRelative)
+                {
+                    var newPath = path.Combine(imagePath);
+                    link.SetAttribute("href", newPath.FullPath);
+                }
+            }
+        }
+
+        var content = parsedContent.ToFormattedHtml();
         <section class="chapter">
             <h1 id="@("id" + doc.Id)" class="title-element"  data-title-level="h1">@doc.GetString("Title")</h1>
             @Html.Raw(content)
