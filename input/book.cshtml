@@ -1,0 +1,258 @@
+﻿@{
+    Layout = null;
+}
+@inherits StatiqRazorPage<IDocument>
+
+<!DOCTYPE html>
+<html lang=" en" class="no-js">
+<head>
+    <title>@Document.GetString("Title")</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;800;900&display=swap" rel="stylesheet">
+    <style>
+        @@media print{
+            body {
+            font-family: 'Lato', sans-serif;
+            }
+            
+            h1, h2, h3, h4, h5 {
+                font-family: 'Raleway', sans-serif;
+            }
+            
+            /* Box sizing rules */
+            *,
+            *::before,
+            *::after {
+              box-sizing: border-box;
+            }
+            
+            /* Remove default margin */
+            body,
+            h1,
+            h2,
+            h3,
+            h4,
+            p,
+            figure,
+            blockquote,
+            dl,
+            dd {
+              margin: 0;
+            }
+            
+            /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+            ul[role='list'],
+            ol[role='list'] {
+              list-style: none;
+            }
+            
+            /* Set core root defaults */
+            html:focus-within {
+              scroll-behavior: smooth;
+            }
+            
+            /* Set core body defaults */
+            body {
+              min-height: 100vh;
+              text-rendering: optimizeSpeed;
+              line-height: 1.5;
+            }
+            
+            /* A elements that don't have a class get default styles */
+            a:not([class]) {
+              text-decoration-skip-ink: auto;
+            }
+            
+            /* Make images easier to work with */
+            img,
+            picture {
+              max-width: 100%;
+              display: block;
+            }
+            
+            /* Inherit fonts for inputs and buttons */
+            input,
+            button,
+            textarea,
+            select {
+              font: inherit;
+            }
+            
+            
+            h1 {
+                font-size: 3rem;
+                font-weight: 900;
+                line-height: 3.1rem;
+                string-set: title content(text);
+                margin-bottom:  1rem;
+            }
+            
+            h2, h3, h4, h5 {
+              margin-top: 1.5rem;
+              margin-bottom: .75rem;
+            }
+            
+            @@page {
+              @@bottom-center {
+                content: string(title);
+              }           
+              
+              @@top-center {
+                content: 'Thirty25.com';
+              }  
+            }
+            
+            @@page:left{
+               @@top-left {
+                  content: counter(page);
+               }
+            }
+        
+            @@page:right{
+                @@top-right {
+                  content: counter(page);
+                }
+            }
+        
+            @@page:blank {
+                @@bottom-center {
+                    content: none;
+                }
+            }
+            
+            @@page:first {
+                @@top-center {
+                    content: none;
+                }
+            
+                @@bottom-center {
+                    content: none;
+                }
+                
+                @@top-right {
+                  content: none;
+                }
+                
+               @@top-left {
+                  content: none;
+               }
+            }
+        
+            @@page {
+                size: letter;
+                margin: 1in;
+                bleed: 6mm;
+            }
+            
+            #title{
+                break-after: page;       
+                display:  flex;
+                align-items: center;
+                justify-content: center;  
+                height:100%;
+            }
+            
+            #title h1{
+                font-size: 5rem;
+            }
+            
+            #title h2{
+                font-size: 2rem;
+                font-weight: 200;
+            }
+            
+            .chapter{
+                break-before: right;
+            }
+            
+            pre {
+                font-size: .8rem;
+                line-height: .95rem;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                margin: 2rem 0;
+                padding-left: 1rem;
+                border-left:  4px solid #666;
+                page-break-inside:avoid;
+            }
+            
+            .chapter a{
+                text-decoration: none;;
+            }
+            
+            .chapter a:after {
+            	content: " [" attr(href) "] ";
+            	color:  #666;
+            	font-size:  .9rem;
+            }
+            
+            #toc {
+                list-style-type: none;
+                padding: 0;
+                padding-inline-start: 2ch;
+            }
+            
+            #toc li > a {
+              text-decoration: none;
+              display: grid;
+              grid-template-columns: auto max-content;
+              align-items: end;
+            }
+            
+            
+                
+            #toc li a::after {
+              content: target-counter(attr(href), page);
+              text-align: right;
+            }           
+        }
+        
+
+    </style>
+</head>
+@{
+    var allChildren = Document.GetChildren().ToArray();
+}
+
+<body>
+
+<section id="title">
+    <header>
+        <h1>Phil Scott</h1>
+        <h2>The Computer Files (Unexpurgated)</h2>    
+    </header>
+    
+</section>
+
+<h1>Table of Contents</h1>
+<div>
+    <ul id="toc">
+    @foreach (var doc in allChildren)
+     {
+         <li>
+             <a href="@("#id" + doc.Id)">@doc.GetString("Title")</a>
+         </li>
+     }
+    </ul>
+</div>
+
+@foreach (var doc in allChildren)
+{
+    {
+        var content = await doc.GetContentStringAsync();
+
+        <section class="chapter">
+            <h1 id="@("id" + doc.Id)" class="title-element"  data-title-level="h1">@doc.GetString("Title")</h1>
+            @Html.Raw(content)
+        </section>
+    }
+}
+</body>
+</html>
