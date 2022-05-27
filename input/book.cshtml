@@ -1,8 +1,8 @@
 ﻿@{
     Layout = null;
 }
-@using AngleSharp
-@inherits StatiqRazorPage<IDocument>
+@using AngleSharp.Html.Parser
+@inherits StatiqRazorPage<Statiq.Common.IDocument>
 
 <!DOCTYPE html>
 <html lang=" en" class="no-js">
@@ -14,12 +14,12 @@
     <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;800;900&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@800;900&family=Roboto+Slab:wght@300;400&display=swap" rel="stylesheet">
     <style>
         @@media print{
             body {
-            font-family: 'Lato', sans-serif;
+            font-family: 'Roboto Slab', serif;
             }
             
             h1, h2, h3, h4, h5 {
@@ -98,31 +98,32 @@
               margin-top: 1.5rem;
               margin-bottom: .75rem;
             }
-            
-            @@page {
-              @@bottom-center {
-                content: string(title);
-              }           
-              
-              @@top-center {
-                content: 'Thirty25.com';
-              }  
-            }
-            
+                       
             @@page:left{
                @@top-left {
                   content: counter(page);
                }
+               
+             @@top-center {
+               content: string(title);
+               font-size:.9rem;
+             }  
             }
         
             @@page:right{
                 @@top-right {
                   content: counter(page);
                 }
+                
+                              
+              @@top-center {
+                content: 'Thirty25.com';
+                font-size:.9rem;
+              }  
             }
         
             @@page:blank {
-                @@bottom-center {
+                @@top-center {
                     content: none;
                 }
             }
@@ -131,11 +132,7 @@
                 @@top-center {
                     content: none;
                 }
-            
-                @@bottom-center {
-                    content: none;
-                }
-                
+                            
                 @@top-right {
                   content: none;
                 }
@@ -151,9 +148,21 @@
                 bleed: 6mm;
             }
             
-            #title{
-                break-after: page;       
+            .footnote {
+              float: footnote;
+            }
+            
+            @@page {
+              @@footnote {
+                float: bottom;
+                font-size:.8rem;
+              }
+            }
+            
+            #title {
+                break-after: right;       
                 display:  flex;
+                flex-direction: column;
                 align-items: center;
                 justify-content: center;  
                 height:100%;
@@ -170,34 +179,48 @@
             
             .chapter{
                 break-before: right;
+                height: 100%;
             }
             
-            pre {
-                font-size: .8rem;
-                line-height: .95rem;
+            .chapter header {
+                break-before: right;       
+                display:  flex;
+                flex-direction: column;
+                justify-content: center;  
+                height:100%;
+            }
+            
+            .chapter header h1 {
+                font-size: 4rem;
+                font-weight: 800;
+            }
+            
+            .chapter header .desc {
+                font-size: 1.5rem;
+                font-weight: 300;
+            }
+            
+            .chapter pre {
+                font-size: .7rem;
+                line-height: .8rem;
                 overflow-x: auto;
                 white-space: pre-wrap;
                 word-wrap: break-word;
                 margin: 2rem 0;
-                padding-left: 1rem;
+                padding: .25rem 0 .25rem 1rem;
                 border-left:  4px solid #666;
                 page-break-inside:avoid;
+            }
+            
+            .chapter p {
+                margin-top:  1rem;
+                margin-bottom:  1rem;
             }
             
             .chapter a{
                 text-decoration: none;;
             }
-            
-            .chapter a[href]:after {
-            	content: " [" attr(href) "] ";
-            	color:  #666;
-            	font-size:  .9rem;
-            }
-            
-            .chapter p {
-            
-            }
-            
+                        
             .chapter table {
                 width: 100%;
                 table-layout: auto;
@@ -206,10 +229,12 @@
                 margin-bottom: 2em;
                 font-size: 0.875em;
                 line-height: 1.7142857;
+                page-break-inside:avoid;
+                border-collapse: collapse
             }
             
             .chapter table thead tr{
-                border-bottom: 1px solid #ccc;
+                border-bottom: 1px solid #666;
             }
             
             .chapter table tbody tr{
@@ -233,8 +258,6 @@
               align-items: end;
             }
             
-            
-                
             #toc li a::after {
               content: target-counter(attr(href), page);
               text-align: right;
@@ -265,6 +288,21 @@
      {
          <li>
              <a href="@("#id" + doc.Id)">@doc.GetString("Title")</a>
+             
+             @{
+                 var headings = Document
+                     .GetDocumentList(Keys.Headings)
+                     ?.Where(x => x.GetInt(Keys.Level) == 1)
+                     .ToList();
+                 if (headings != default && headings.Count > 0)
+                 {
+                     <ul>
+                         <li>Head</li>
+
+                     </ul>
+                 }
+
+             }
          </li>
      }
     </ul>
@@ -302,23 +340,18 @@
             }
             else
             {
-                if (href == default || href.StartsWith("http"))
-                {
-                    continue;
-                }
-
-                var imagePath = new NormalizedPath(href);
-                if (imagePath.IsRelative)
-                {
-                    var newPath = path.Combine(imagePath);
-                    link.SetAttribute("href", newPath.FullPath);
-                }
+                var parser = new HtmlParser();
+                var document = parser.ParseFragment($"<span class=\"link\">{link.TextContent} <span class=\"footnote\">{href}</span></span>", link.ParentElement!);
+                link.Replace(document.ToArray());
             }
         }
 
         var content = parsedContent.ToFormattedHtml();
         <section class="chapter">
-            <h1 id="@("id" + doc.Id)" class="title-element"  data-title-level="h1">@doc.GetString("Title")</h1>
+            <header>
+                <h1 id="@("id" + doc.Id)" class="title-element" data-title-level="h1">@doc.GetString("Title")</h1>
+                <p class="desc">Originally published @doc.GetDateTime("date").ToLongDateString()</p>
+            </header>
             @Html.Raw(content)
         </section>
     }
