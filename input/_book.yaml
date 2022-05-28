@@ -1,4 +1,4 @@
 ﻿Title: Thirty25 - The Book
-ArchiveSources: => $"posts/**/*"
-ArchiveOrderKey: date
-ArchiveOrderDescending: true
+BookSources: posts/**/*
+BookOrderKey: date
+BookOrderDescending: true

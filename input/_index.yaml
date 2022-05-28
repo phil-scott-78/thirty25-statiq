@@ -1,5 +1,5 @@
 ﻿Title: Recent Posts
-ArchiveSources: => $"posts/**/*"
+ArchiveSources: posts/**/*
 ArchiveDestination: >
   => GetInt("Index") <= 1 ? $"index.html" : $"{GetInt("Index")}.html"
 ArchivePageSize: => @Constants.PostsPerPage

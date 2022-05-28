@@ -272,13 +272,11 @@
 }
 
 <body>
-
 <section id="title">
     <header>
         <h1>Phil Scott</h1>
         <h2>The Computer Files (Unexpurgated)</h2>    
     </header>
-    
 </section>
 
 <h1>Table of Contents</h1>
@@ -288,21 +286,6 @@
      {
          <li>
              <a href="@("#id" + doc.Id)">@doc.GetString("Title")</a>
-             
-             @{
-                 var headings = Document
-                     .GetDocumentList(Keys.Headings)
-                     ?.Where(x => x.GetInt(Keys.Level) == 1)
-                     .ToList();
-                 if (headings != default && headings.Count > 0)
-                 {
-                     <ul>
-                         <li>Head</li>
-
-                     </ul>
-                 }
-
-             }
          </li>
      }
     </ul>
@@ -311,42 +294,7 @@
 @foreach (var doc in allChildren)
 {
     {
-        var path = doc.Source.GetRelativeInputPath().Parent;
-        var parsedContent = await doc.ParseHtmlAsync();
-
-        foreach (var image in parsedContent.Images)
-        {
-            var src = image.GetAttribute("src");
-            if (src == default)
-            {
-                continue;
-            }
-
-            var imagePath = new NormalizedPath(src);
-            if (imagePath.IsRelative)
-            {
-                var newPath = path.Combine(imagePath);
-                image.SetAttribute("src", newPath.FullPath);
-            }
-        }
-
-        foreach (var link in parsedContent.Links)
-        {
-            var href = link.GetAttribute("href");
-
-            if (link.TextContent == href)
-            {
-                link.RemoveAttribute("href");
-            }
-            else
-            {
-                var parser = new HtmlParser();
-                var document = parser.ParseFragment($"<span class=\"link\">{link.TextContent} <span class=\"footnote\">{href}</span></span>", link.ParentElement!);
-                link.Replace(document.ToArray());
-            }
-        }
-
-        var content = parsedContent.ToFormattedHtml();
+        var content = await doc.GetContentStringAsync();
         <section class="chapter">
             <header>
                 <h1 id="@("id" + doc.Id)" class="title-element" data-title-level="h1">@doc.GetString("Title")</h1>
