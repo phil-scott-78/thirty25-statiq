@@ -137,12 +137,20 @@ public class HtmlToPdf : Module
         });
 
         var page = await browserContext.NewPageAsync();
-        var url = app.Urls.First(u => u.StartsWith("http://"));
         var content = await input.GetContentStringAsync();
+        context.Logger.Log(LogLevel.Information, input, "Setting content");
         await page.SetContentAsync(content);
+        context.Logger.Log(LogLevel.Information, input, "Waiting for request");
+        // await page.WaitForRequestFinishedAsync();
+        // await page.WaitForFunctionAsync("window.PagedConfig.after");
         await page.WaitForRequestFinishedAsync();
-        var pdf = await page.PdfAsync();
+        await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        await page.WaitForSelectorAsync(".pagedjs_pages");
+        // await page.WaitForTimeoutAsync(2000);
         
+        context.Logger.Log(LogLevel.Information, input, "Writing PDF");
+        var pdf = await page.PdfAsync();
+
         await using var contentStream = context.GetContentStream();
         await contentStream.WriteAsync(pdf);
         return new[] { context.CreateDocument(input.Destination.ChangeExtension("pdf"), context.GetContentProvider(contentStream, "application/pdf")) };
