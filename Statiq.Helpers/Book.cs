@@ -143,10 +143,12 @@ public class HtmlToPdf : Module
         context.Logger.Log(LogLevel.Information, input, "Waiting for request");
         // await page.WaitForRequestFinishedAsync();
         // await page.WaitForFunctionAsync("window.PagedConfig.after");
+        
         await page.WaitForRequestFinishedAsync();
         await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
         await page.WaitForSelectorAsync(".pagedjs_pages");
-        // await page.WaitForTimeoutAsync(2000);
+        // honestly not sure what to do other than wait at this point...
+        await page.WaitForTimeoutAsync(5000);
         
         context.Logger.Log(LogLevel.Information, input, "Writing PDF");
         var pdf = await page.PdfAsync();
