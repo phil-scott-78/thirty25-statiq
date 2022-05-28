@@ -1,4 +1,4 @@
-﻿ArchiveSources: => $"posts/**/*"
+﻿ArchiveSources: posts/**/*
 ArchiveKey: Tags
 ArchiveKeyComparer: => StringComparer.OrdinalIgnoreCase.ToConvertingEqualityComparer()
 ArchiveDestination: >

@@ -8,6 +8,7 @@ using MonorailCss.Css;
 using MonorailCss.Plugins;
 using Statiq.App;
 using Statiq.Common;
+using Statiq.Core;
 using Statiq.Feeds;
 using Statiq.Web;
 using Statiq.Web.Pipelines;
@@ -34,6 +35,7 @@ await Bootstrapper.Factory
     })
     .ModifyPipeline(nameof(Content), pipeline =>
     {
+        pipeline.ProcessModules.ReplaceFirst<FilterDocuments>(_ => true, new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc) && !Book.IsBook(doc))));
         pipeline.PostProcessModules.Add(new RoslynHighlightModule());
     })
     .AddProcess(ProcessTiming.Initialization,
