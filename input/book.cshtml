@@ -18,8 +18,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@800;900&family=Roboto+Slab:wght@300;400&display=swap" rel="stylesheet">
     <style>
         @@media print{
+            html { font-size: 62.5%; } 
+        
             body {
-            font-family: 'Roboto Slab', serif;
+                font-family: 'Roboto Slab', serif;
+                font-size: 1.35rem;
             }
             
             h1, h2, h3, h4, h5 {
@@ -144,7 +147,7 @@
         
             @@page {
                 size: letter;
-                margin: 1in;
+                margin: 10mm 15mm;
                 bleed: 6mm;
             }
             
@@ -155,7 +158,7 @@
             @@page {
               @@footnote {
                 float: bottom;
-                font-size:.8rem;
+                font-size:1rem;
               }
             }
             
@@ -169,11 +172,11 @@
             }
             
             #title h1{
-                font-size: 5rem;
+                font-size: 6rem;
             }
             
             #title h2{
-                font-size: 2rem;
+                font-size: 3rem;
                 font-weight: 200;
             }
             
@@ -201,8 +204,8 @@
             }
             
             .chapter pre {
-                font-size: .7rem;
-                line-height: .8rem;
+                font-size: 1.2rem;
+                line-height: 1.3rem;
                 overflow-x: auto;
                 white-space: pre-wrap;
                 word-wrap: break-word;
@@ -251,8 +254,9 @@
                 padding-inline-start: 2ch;
             }
             
-            #toc li > a {
+            #toc li a {
               text-decoration: none;
+              color: inherit;
               display: grid;
               grid-template-columns: auto max-content;
               align-items: end;
@@ -304,5 +308,19 @@
         </section>
     }
 }
+
+<script>
+  class MyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) {
+      super(chunker, polisher, caller);
+    }
+
+    afterRendered(pages) {
+      console.log("after render");
+    }
+  }
+  Paged.registerHandlers(MyHandler);
+</script>
+
 </body>
 </html>

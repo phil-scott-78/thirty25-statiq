@@ -20,7 +20,7 @@ public class Book : Pipeline
     public Book(Templates templates)
     {
         ExecutionPolicy = ExecutionPolicy.Manual;
-        Dependencies.AddRange(nameof(Inputs), nameof(Content), nameof(Data));
+        Dependencies.AddRange(nameof(Inputs), nameof(Content), nameof(Data), nameof(Assets));
 
         ProcessModules = new ModuleList
         {
@@ -32,26 +32,30 @@ public class Book : Pipeline
             {
                 new ExecuteConfig(Config.FromDocument((bookDoc, ctx) =>
                 {
-                    var modules = new ModuleList();
-                    modules.Add(new ReplaceDocuments(bookDoc.GetList(BookKeys.BookPipelines, new[] { nameof(Content) })
-                        .ToArray()));
-                    modules.Add(new MergeMetadata(Config.FromValue(bookDoc.Yield())).KeepExisting());
-                    modules.Add(new MakeLinksAbsolute());
-                    modules.Add(new ProcessHtml("a[\"href\"]", link =>
+                    var modules = new ModuleList
                     {
-                        var href = link.GetAttribute("href");
+                        new ReplaceDocuments(bookDoc.GetList(BookKeys.BookPipelines, new[] { nameof(Content) })
+                            .ToArray()),
+                        new MergeMetadata(Config.FromValue(bookDoc.Yield())).KeepExisting(),
+                        new MakeLinksAbsolute(),
+                        new ProcessHtml("a[\"href\"]", link =>
+                        {
+                            var href = link.GetAttribute("href");
 
-                        if (link.TextContent == href)
-                        {
-                            link.RemoveAttribute("href");
-                        }
-                        else
-                        {
-                            var parser = new HtmlParser();
-                            var document = parser.ParseFragment($"<span class=\"link\">{link.TextContent} <span class=\"footnote\">{href}</span></span>", link.ParentElement!);
-                            link.Replace(document.ToArray());
-                        }
-                    }));
+                            if (link.TextContent == href)
+                            {
+                                // if the text is the same as the url just make remove the href. no need for a footnote.
+                                link.RemoveAttribute("href");
+                            }
+                            else
+                            {
+                                // replace the link with a footnote.
+                                var parser = new HtmlParser();
+                                var document = parser.ParseFragment($"<span class=\"link\">{link.TextContent} <span class=\"footnote\">{href}</span></span>", link.ParentElement!);
+                                link.Replace(document.ToArray());
+                            }
+                        })
+                    };
 
                     // Filter by document source
                     if (bookDoc.ContainsKey(BookKeys.BookSources))
@@ -141,17 +145,26 @@ public class HtmlToPdf : Module
         context.Logger.Log(LogLevel.Information, input, "Setting content");
         await page.SetContentAsync(content);
         context.Logger.Log(LogLevel.Information, input, "Waiting for request");
-        // await page.WaitForRequestFinishedAsync();
-        // await page.WaitForFunctionAsync("window.PagedConfig.after");
-        
-        await page.WaitForRequestFinishedAsync();
-        await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-        await page.WaitForSelectorAsync(".pagedjs_pages");
-        // honestly not sure what to do other than wait at this point...
-        await page.WaitForTimeoutAsync(5000);
-        
+
+        await page.WaitForConsoleMessageAsync(new PageWaitForConsoleMessageOptions()
+        {
+            Predicate = message => message.Text == "after render"
+        });
+
         context.Logger.Log(LogLevel.Information, input, "Writing PDF");
-        var pdf = await page.PdfAsync();
+        var pdf = await page.PdfAsync(new PagePdfOptions()
+        {
+            Margin = new Margin()
+            {
+                Bottom = "0",
+                Left = "0",
+                Right = "0",
+                Top = "0"
+            },
+            DisplayHeaderFooter = false,
+            PrintBackground = true,
+            PreferCSSPageSize = true,
+        });
 
         await using var contentStream = context.GetContentStream();
         await contentStream.WriteAsync(pdf);
@@ -164,6 +177,5 @@ public static class BookKeys
     public static string BookOrderKey = nameof(BookOrderKey);
     public static string BookOrderDescending = nameof(BookOrderDescending);
     public static string BookSources = nameof(BookSources);
-
     public static string BookPipelines = nameof(BookPipelines);
 }

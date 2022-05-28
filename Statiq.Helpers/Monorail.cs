@@ -22,6 +22,8 @@ public class Monorail : Pipeline
             nameof(Data),
             nameof(Archives));
 
+        DependencyOf.AddRange(nameof(AnalyzeContent));
+
         ProcessModules = new ModuleList
         {
             new ConcatDocuments(nameof(Content)),
