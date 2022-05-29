@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using MonorailCss;
@@ -13,12 +14,14 @@ using Statiq.Feeds;
 using Statiq.Web;
 using Statiq.Web.Pipelines;
 using Thirty25;
-using Thirty25.Statiq.Helpers;
+using Thirty25.Statiq;
+using Thirty25.Statiq.Pipelines;
+using GatherHeadings = Statiq.Core.GatherHeadings;
 using ISettings = MonorailCss.Plugins.ISettings;
 
 [assembly: AspMvcPartialViewLocationFormat("~/input/{0}.cshtml")]
 
-var dotnetPath = System.Environment.GetEnvironmentVariable("DOTNET_PATH") ?? "dotnet";
+var dotnetPath = Environment.GetEnvironmentVariable("DOTNET_PATH") ?? "dotnet";
 
 await Bootstrapper.Factory
     .CreateWeb(args)
@@ -35,6 +38,7 @@ await Bootstrapper.Factory
     })
     .ModifyPipeline(nameof(Content), pipeline =>
     {
+        pipeline.ProcessModules.GetLast<CacheDocuments>().Children.GetLast<ExecuteIf>()[0].ReplaceFirst<Statiq.Core.GatherHeadings>(_ => true, new Thirty25.Statiq.Pipelines.GatherHeadings(2));
         pipeline.ProcessModules.ReplaceFirst<FilterDocuments>(_ => true, new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc) && !Book.IsBook(doc))));
         pipeline.PostProcessModules.Add(new RoslynHighlightModule());
     })
@@ -87,16 +91,10 @@ CssFramework GetCssFramework()
             Applies = new Dictionary<string, string>
             {
                 { "body", "font-sans" },
-                {
-                    ".token.comment,.token.prolog,.token.doctype,.token.cdata,.token.punctuation,.token.selector,.token.tag",
-                    "text-gray-300"
-                },
+                { ".token.comment,.token.prolog,.token.doctype,.token.cdata,.token.punctuation,.token.selector,.token.tag", "text-gray-300" },
                 { ".token.boolean,.token.number,.token.constant,.token.attr-name,.token.deleted", "text-blue-300" },
                 { ".token.string,.token.char,.token.attr-value,.token.builtin,.token.inserted", "text-green-300" },
-                {
-                    ".token.operator,.token.entity,.token.url,.token.symbol,.token.class-name,.language-css .token.string,.style .token.string",
-                    "text-cyan-300"
-                },
+                { ".token.operator,.token.entity,.token.url,.token.symbol,.token.class-name,.language-css .token.string,.style .token.string", "text-cyan-300" },
                 { ".token.atrule,.token.keyword", "text-indigo-300" },
                 { ".token.property,.token.function", "text-orange-300" },
                 { ".token.regex,.token.important", "text-red-300" },

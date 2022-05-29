@@ -12,7 +12,7 @@ using Statiq.Common;
 using IDocument = Statiq.Common.IDocument;
 using Task = System.Threading.Tasks.Task;
 
-namespace Thirty25.Statiq.Helpers;
+namespace Thirty25.Statiq;
 
 public class RoslynHighlightModule : Module
 {

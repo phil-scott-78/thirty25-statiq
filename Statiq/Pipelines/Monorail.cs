@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ConcurrentCollections;
+using JetBrains.Annotations;
 using MonorailCss;
 using Statiq.Common;
 using Statiq.Core;
 using Statiq.Web.Pipelines;
 using IDocument = Statiq.Common.IDocument;
 
-namespace Thirty25.Statiq.Helpers;
+namespace Thirty25.Statiq.Pipelines;
 
+[UsedImplicitly]
 public class Monorail : Pipeline
 {
     public Monorail()

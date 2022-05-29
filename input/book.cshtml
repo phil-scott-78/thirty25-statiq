@@ -1,7 +1,6 @@
 ﻿@{
     Layout = null;
 }
-@using AngleSharp.Html.Parser
 @inherits StatiqRazorPage<Statiq.Common.IDocument>
 
 <!DOCTYPE html>
@@ -15,7 +14,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@800;900&family=Roboto+Slab:wght@300;400&family=Source+Code+Pro:wght@300;400&display=swap" rel="stylesheet">    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@800;900&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Source+Code+Pro:wght@300;400" rel="stylesheet">
+    <style>
         @@media print{
             html { font-size: 62.5%; } 
         
@@ -63,8 +63,8 @@
             /* Set core body defaults */
             body {
               min-height: 100vh;
-              text-rendering: optimizeSpeed;
-              line-height: 1.5;
+              text-rendering: optimizeLegibility;
+              line-height: 1.6;
             }
             
             /* A elements that don't have a class get default styles */
@@ -87,6 +87,15 @@
               font: inherit;
             }
             
+            .visually-hidden {
+              clip: rect(0 0 0 0);
+              clip-path: inset(100%);
+              height: 1px;
+              overflow: hidden;
+              position: absolute;
+              width: 1px;
+              white-space: nowrap;
+            }
             
             h1 {
                 font-size: 3rem;
@@ -209,7 +218,7 @@
             
             .chapter pre {
                 font-size: 1rem;
-                line-height: 1.1rem;
+                line-height: 1.45rem;
                 letter-spacing: -0.025rem;
                 overflow-x: auto;
                 white-space: pre-wrap;
@@ -253,24 +262,64 @@
                 border-bottom: none;
             }
             
-            #toc {
+            #toc, #toc ol {
                 list-style-type: none;
-                padding: 0;
-                padding-inline-start: 2ch;
+                line-height: 3rem;
             }
             
-            #toc li a {
-              text-decoration: none;
-              color: inherit;
+            #toc {
+                padding: 0;
+            }
+            
+            #toc > li > div {
+                font-weight: bold;
+            }
+                                   
+            #toc ol {
+                padding-inline-start: 3ch;
+            }
+                       
+            #toc li > div {
               display: grid;
               grid-template-columns: auto max-content;
               align-items: end;
             }
+                       
+            #toc li .title{
+                position: relative;
+                overflow: hidden;
+            }
             
-            #toc li a::after {
-              content: target-counter(attr(href), page);
+            #toc li .title::after {
+                position: absolute;
+                padding-left: .25ch;
+                content: " . . . . . . . . . . . . . . . . . . . "
+                    ". . . . . . . . . . . . . . . . . . . . . . . "
+                    ". . . . . . . . . . . . . . . . . . . . . . . "
+                    ". . . . . . . . . . . . . . . . . . . . . . . "
+                    ". . . . . . . . . . . . . . . . . . . . . . . "
+                    ". . . . . . . . . . . . . . . . . . . . . . . "
+                    ". . . . . . . . . . . . . . . . . . . . . . . ";
+                text-align: right;
+                color: #666;
+            }
+            
+            #toc li .page{
               text-align: right;
-            }           
+            }
+            
+            #toc li a{
+              color: inherit;
+              text-decoration: none;
+            }   
+            
+            #toc li a::after{
+              content: target-counter(attr(href), page);
+              font-variant-numeric: tabular-nums;
+              min-width: 3ch;
+              text-align: right;
+              margin-left: .5rem;
+            }   
         }
         
 
@@ -278,6 +327,7 @@
 </head>
 @{
     var allChildren = Document.GetChildren().ToArray();
+
 }
 
 <body>
@@ -290,14 +340,34 @@
 
 <h1>Table of Contents</h1>
 <div>
-    <ul id="toc">
+    <ol id="toc">
     @foreach (var doc in allChildren)
      {
+         IReadOnlyList<IDocument> headings = doc
+             .GetDocumentList(Keys.Headings)
+             .ToList();
          <li>
-             <a href="@("#id" + doc.Id)">@doc.GetString("Title")</a>
+             <div>
+             <span class="title">@doc.GetString("Title")</span>
+             <span class="page"><a href="@("#id" + doc.Id)"><span class="visually-hidden">Page </span></a></span>
+             </div>
+             @if (headings?.Count > 0)
+             {
+                 <ol>
+                     @foreach (var heading in headings)
+                     {
+                         <li>
+                             <div>
+                                <span class="title">@(await heading.GetContentStringAsync())</span>
+                                <span class="page"><a href="#@(heading.GetString(Keys.HeadingId))"><span class="visually-hidden">Page </span></a></span>
+                             </div>
+                         </li>
+                     }
+                 </ol>
+             }
          </li>
      }
-    </ul>
+    </ol>
 </div>
 
 @foreach (var doc in allChildren)
@@ -315,6 +385,9 @@
 }
 
 <script>
+  // when rendering we need to know how long to wait until saving as a pdf
+  // paged.js can be pretty slow, especially running in a GH action, so
+  // we'll send a console message that playwright will wait for. 
   class MyHandler extends Paged.Handler {
     constructor(chunker, polisher, caller) {
       super(chunker, polisher, caller);

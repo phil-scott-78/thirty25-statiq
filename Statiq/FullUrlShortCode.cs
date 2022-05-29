@@ -1,7 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Statiq.Common;
 
+namespace Thirty25.Statiq;
+
+[UsedImplicitly]
 internal class FullUrlShortCode : SyncShortcode
 {
     public override ShortcodeResult Execute(KeyValuePair<string, string>[] args, string content, IDocument document,
@@ -11,11 +15,11 @@ internal class FullUrlShortCode : SyncShortcode
         string host;
         if (env != "production")
         {
-            host = context.GetString("VERCEL_URL", Thirty25.Constants.ProdSiteUrl);
+            host = context.GetString("VERCEL_URL", Constants.ProdSiteUrl);
         }
         else
         {
-            host = Thirty25.Constants.ProdSiteUrl;
+            host = Constants.ProdSiteUrl;
         }
 
         if (host.EndsWith("/"))
