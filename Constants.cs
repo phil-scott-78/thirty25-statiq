@@ -6,4 +6,5 @@ public static class Constants
     public const string Description = "A collection of my bad ideas and questionable architectural decisions.";
     public const string ProdSiteUrl = "https://thirty25.com/";
     public const string CssFile = nameof(CssFile);
+    public const int PostsPerPage = 10;
 }

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using MonorailCss;
 using MonorailCss.Css;
 using MonorailCss.Plugins;
+using MonorailCss.Plugins.Prose;
 using Statiq.App;
 using Statiq.Common;
 using Statiq.Core;
@@ -38,7 +38,12 @@ await Bootstrapper.Factory
     })
     .ModifyPipeline(nameof(Content), pipeline =>
     {
-        pipeline.ProcessModules.GetLast<CacheDocuments>().Children.GetLast<ExecuteIf>()[0].ReplaceFirst<Statiq.Core.GatherHeadings>(_ => true, new Thirty25.Statiq.Pipelines.GatherHeadings(2));
+        // make sure to include child content like code blocks.
+        pipeline.ProcessModules
+            .GetLast<CacheDocuments>().Children
+            .GetLast<ExecuteIf>()[0]
+            .ReplaceFirst<GatherHeadings>(_ => true, new GatherHeadings(2).WithNestedElements());
+        // in addition to the archive pipeline we also have the book so make sure the regular content skips those too
         pipeline.ProcessModules.ReplaceFirst<FilterDocuments>(_ => true, new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc) && !Book.IsBook(doc))));
         pipeline.PostProcessModules.Add(new RoslynHighlightModule());
     })
