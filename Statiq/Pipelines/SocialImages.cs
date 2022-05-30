@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
+using AngleSharp.Dom;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +17,7 @@ using Statiq.Core;
 using Statiq.Web;
 using Statiq.Web.Modules;
 using Statiq.Web.Pipelines;
+using IDocument = Statiq.Common.IDocument;
 
 namespace Thirty25.Statiq.Pipelines;
 
@@ -59,10 +62,10 @@ internal class GenerateSocialImage : ParallelModule
     protected override async Task BeforeExecutionAsync(IExecutionContext context)
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Logging.ClearProviders();
+        //builder.Logging.ClearProviders();
         builder.Services
             .AddRazorPages()
-            .WithRazorPagesRoot("/Statiq.Helpers");
+            .WithRazorPagesRoot("/Statiq");
 
         _app = builder.Build();
         _app.MapRazorPages();
@@ -98,11 +101,11 @@ internal class GenerateSocialImage : ParallelModule
         var url = _app.Urls.First(u => u.StartsWith("http://"));
         var page = await _context.NewPageAsync();
 
-        var title = input.GetString("Title");
-        var description = input.GetString("Description");
+        var title = HttpUtility.UrlEncode(input.GetString("Title"));
+        var description = HttpUtility.UrlEncode(input.GetString("Description"));
         var tags = input.GetList<string>("tags") ?? Array.Empty<string>();
 
-        await page.GotoAsync($"{url}/SocialCard?title={title}&desc={description}&tags={string.Join(';', tags)}");
+        await page.GotoAsync($"{url}/SocialCard?title={title}&desc={description}&tags={HttpUtility.UrlEncode(string.Join(';', tags))}");
 
         // This will not just wait for the  page to load over the network, but it'll also give
         // chrome a chance to complete rendering of the fonts while the wait timeout completes.
