@@ -36,7 +36,7 @@ jobs:
           dotnet-version: 6.0.x
       - name: Restore dependencies
         run: dotnet restore
-      - name: Create Book
+      - name: Build Statiq Site
         run: dotnet run
       - name: Setup Pages
         uses: actions/configure-pages@v1
