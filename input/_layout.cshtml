@@ -16,9 +16,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     @* ReSharper disable Html.PathError *@
-    <link type="application/rss+xml" rel="alternate" title="Thirty25" href="/rss.xml" />
-    <link type="application/atom+xml" rel="alternate" title="Thirty25" href="/atom.xml" />
-    <link href="/assets/styles.css" rel="stylesheet"/>
+    <link type="application/rss+xml" rel="alternate" title="Thirty25" href="@Context.GetLink("/rss.xml")"/>
+    <link type="application/atom+xml" rel="alternate" title="Thirty25" href="@Context.GetLink("/atom.xml")" />
+    <link href="@Context.GetLink("/assets/styles.css")" rel="stylesheet"/>
     @* ReSharper restore Html.PathError *@
     
     <meta name="description" content="@blogDescription">
@@ -47,10 +47,10 @@
 <header class="sticky top-0 left-2 w-full backdrop-blur bg-base-100/80 dark:bg-base-800/80 border-b border-base-900/20 dark:border-base-50/10 shadow-md dark:shadow-lg py-2 md:py-4 z-50">
     <nav class="mx-auto max-w-5xl px-4 md:px-8 xl:px-0 flex  items-center">
         @* ReSharper disable Html.PathError *@
-        <img src="/assets/avatar.svg" alt="Avatar image" class="inline-block h-10 w-10 md:h-12 md:w-12 mr-4  rounded-full shadow-md bg-gradient-to-br from-primary-800 to-primary-500 dark:from-primary-500 dark:to-primary-300"/>
+        <img src="@Context.GetLink("/assets/avatar.svg")" alt="Avatar image" class="inline-block h-10 w-10 md:h-12 md:w-12 mr-4  rounded-full shadow-md bg-gradient-to-br from-primary-800 to-primary-500 dark:from-primary-500 dark:to-primary-300"/>
         @* ReSharper restore Html.PathError *@
         <h1>
-            <a class="font-extrabold text-2xl md:text-4xl text-base-700 dark:text-base-300" href="/">
+            <a class="font-extrabold text-2xl md:text-4xl text-base-700 dark:text-base-300" href="@Context.GetLink("/")" >
                 @Constants.BlogTitle
             </a>
         </h1>
