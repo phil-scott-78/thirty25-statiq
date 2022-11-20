@@ -21,8 +21,6 @@ using ISettings = MonorailCss.Plugins.ISettings;
 
 [assembly: AspMvcPartialViewLocationFormat("~/input/{0}.cshtml")]
 
-var dotnetPath = Environment.GetEnvironmentVariable("DOTNET_PATH") ?? "dotnet";
-
 await Bootstrapper.Factory
     .CreateWeb(args)
     .AddSetting(Keys.Host, "thirty25.com")
