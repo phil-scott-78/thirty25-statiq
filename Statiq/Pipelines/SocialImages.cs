@@ -78,7 +78,11 @@ internal class GenerateSocialImage : ParallelModule
         await _app.StartAsync();
 
         _playwright = await Playwright.CreateAsync();
-        _browser = await _playwright.Chromium.LaunchAsync();
+        _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            ExecutablePath = Chromium.Path,
+            Headless = true,
+        });
         _context = await _browser.NewContextAsync(new BrowserNewContextOptions
         {
             ViewportSize = new ViewportSize { Width = 1200, Height = 628 },
