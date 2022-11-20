@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -78,9 +79,10 @@ internal class GenerateSocialImage : ParallelModule
         await _app.StartAsync();
 
         _playwright = await Playwright.CreateAsync();
+        Debug.Assert(Chromium.Path != null, "Chromium.Path != null");
         _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            ExecutablePath = Chromium.Path,
+            ExecutablePath = Chromium.Path.Replace("ubuntu.18.04-x64", "linux-x64"),
             Headless = true,
         });
         _context = await _browser.NewContextAsync(new BrowserNewContextOptions
