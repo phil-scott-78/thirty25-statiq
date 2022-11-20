@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp6</TargetFramework>
     <RootNamespace>Thirty25</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <NoWarn>MVC1000</NoWarn>
+    <NoWarn>NETSDK1187;MVC1000</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
