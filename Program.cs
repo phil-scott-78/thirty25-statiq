@@ -47,10 +47,6 @@ await Bootstrapper.Factory
         pipeline.ProcessModules.ReplaceFirst<FilterDocuments>(_ => true, new FilterDocuments(Config.FromDocument(doc => !Archives.IsArchive(doc) && !Book.IsBook(doc))));
         pipeline.PostProcessModules.Add(new RoslynHighlightModule());
     })
-    .AddProcess(ProcessTiming.Initialization,
-        _ => new ProcessLauncher(dotnetPath, "tool restore") { LogErrors = false })
-    .AddProcess(ProcessTiming.Initialization,
-        _ => new ProcessLauncher(dotnetPath, "tool run playwright install chromium") { LogErrors = false })
     .RunAsync();
 
 
